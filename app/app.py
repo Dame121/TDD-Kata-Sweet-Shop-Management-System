@@ -32,24 +32,6 @@ app.include_router(admins_router)
 app.include_router(sweets_router)
 
 
-@app.get("/")
-async def root():
-    return {
-        "message": "Welcome to Sweet Shop Management System API",
-        "version": "1.0.0",
-        "endpoints": {
-            "users": "/users",
-            "admins": "/admins",
-            "sweets": "/sweets",
-            "docs": "/docs",
-            "health": "/health"
-        }
-    }
-
-
-@app.get("/health")
-async def health_check():
-    return {"status": "healthy"}
 
 
 
