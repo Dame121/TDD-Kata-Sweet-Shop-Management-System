@@ -60,14 +60,6 @@ def create_admin(
     """
     Create a new admin account. Requires admin authentication.
     """
-def create_admin(
-    admin: AdminCreate, 
-    db: Session = Depends(get_db),
-    current_admin: User = Depends(get_current_admin_user)
-):
-    """
-    Create a new admin account. Requires admin authentication.
-    """
     # Check if username already exists
     db_admin_username = db.query(User).filter(User.username == admin.username).first()
     if db_admin_username:
