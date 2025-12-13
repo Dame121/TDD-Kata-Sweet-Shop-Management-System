@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, and_
 from pydantic import BaseModel, Field
@@ -6,6 +6,7 @@ from typing import List, Optional
 from datetime import datetime
 from app.database import get_db, Sweet, Transaction, User
 from app.auth_utils import get_current_user, get_current_admin_user
+from app.imagekit_utils import upload_sweet_image, delete_sweet_image
 
 router = APIRouter(prefix="/api/sweets", tags=["Sweets"])
 
@@ -28,6 +29,8 @@ class SweetResponse(BaseModel):
     category: str
     price: float
     quantity_in_stock: int
+    image_url: Optional[str] = None
+    image_id: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -58,26 +61,45 @@ class TransactionResponse(BaseModel):
 
 # CREATE - Add a new sweet (Admin only)
 @router.post("/", response_model=SweetResponse, status_code=status.HTTP_201_CREATED)
-def create_sweet(
-    sweet: SweetCreate,
+async def create_sweet(
+    name: str = Form(...),
+    category: str = Form(...),
+    price: float = Form(...),
+    quantity_in_stock: int = Form(0),
+    image: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin_user)
 ):
     """
-    Add a new sweet to the inventory.
+    Add a new sweet to the inventory with optional image.
     Requires admin authentication.
     """
     # Check if sweet name already exists
-    db_sweet = db.query(Sweet).filter(Sweet.name == sweet.name).first()
+    db_sweet = db.query(Sweet).filter(Sweet.name == name).first()
     if db_sweet:
         raise HTTPException(status_code=400, detail="Sweet with this name already exists")
     
+    # Handle image upload if provided
+    image_url = None
+    image_id = None
+    if image:
+        try:
+            upload_result = await upload_sweet_image(image, name)
+            image_url = upload_result["url"]
+            image_id = upload_result["file_id"]
+        except HTTPException as e:
+            raise e
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Image upload failed: {str(e)}")
+    
     # Create new sweet
     new_sweet = Sweet(
-        name=sweet.name,
-        category=sweet.category,
-        price=sweet.price,
-        quantity_in_stock=sweet.quantity_in_stock
+        name=name,
+        category=category,
+        price=price,
+        quantity_in_stock=quantity_in_stock,
+        image_url=image_url,
+        image_id=image_id
     )
     db.add(new_sweet)
     db.commit()
@@ -196,15 +218,93 @@ def delete_sweet(
     current_admin: User = Depends(get_current_admin_user)
 ):
     """
-    Delete a sweet from the inventory.
+    Delete a sweet from the inventory and its image from ImageKit.
     Requires admin authentication.
     """
     sweet = db.query(Sweet).filter(Sweet.sweet_id == sweet_id).first()
     if not sweet:
         raise HTTPException(status_code=404, detail="Sweet not found")
     
+    # Delete image from ImageKit if it exists
+    if sweet.image_id:
+        try:
+            delete_sweet_image(sweet.image_id)
+        except Exception as e:
+            # Log error but continue with deletion
+            print(f"Warning: Failed to delete image from ImageKit: {str(e)}")
+    
     db.delete(sweet)
     db.commit()
+    return None
+
+
+# UPDATE IMAGE - Update a sweet's image (Admin only)
+@router.put("/{sweet_id}/image", response_model=SweetResponse)
+async def update_sweet_image(
+    sweet_id: int,
+    image: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(get_current_admin_user)
+):
+    """
+    Update or add an image to a sweet.
+    Requires admin authentication.
+    """
+    sweet = db.query(Sweet).filter(Sweet.sweet_id == sweet_id).first()
+    if not sweet:
+        raise HTTPException(status_code=404, detail="Sweet not found")
+    
+    # Delete old image if exists
+    if sweet.image_id:
+        try:
+            delete_sweet_image(sweet.image_id)
+        except Exception as e:
+            print(f"Warning: Failed to delete old image: {str(e)}")
+    
+    # Upload new image
+    try:
+        upload_result = await upload_sweet_image(image, sweet.name)
+        sweet.image_url = upload_result["url"]
+        sweet.image_id = upload_result["file_id"]
+        
+        db.commit()
+        db.refresh(sweet)
+        return sweet
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Image upload failed: {str(e)}")
+
+
+# DELETE IMAGE - Remove a sweet's image (Admin only)
+@router.delete("/{sweet_id}/image", status_code=status.HTTP_204_NO_CONTENT)
+def delete_sweet_image_endpoint(
+    sweet_id: int,
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(get_current_admin_user)
+):
+    """
+    Remove the image from a sweet.
+    Requires admin authentication.
+    """
+    sweet = db.query(Sweet).filter(Sweet.sweet_id == sweet_id).first()
+    if not sweet:
+        raise HTTPException(status_code=404, detail="Sweet not found")
+    
+    if not sweet.image_id:
+        raise HTTPException(status_code=404, detail="Sweet has no image")
+    
+    # Delete image from ImageKit
+    try:
+        delete_sweet_image(sweet.image_id)
+    except Exception as e:
+        print(f"Warning: Failed to delete image from ImageKit: {str(e)}")
+    
+    # Remove image references from database
+    sweet.image_url = None
+    sweet.image_id = None
+    db.commit()
+    
     return None
 
 

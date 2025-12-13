@@ -35,6 +35,8 @@ class Sweet(Base):
     description = Column(Text, nullable=True)  # Optional description for better UX
     price = Column(Float, nullable=False)
     quantity_in_stock = Column(Integer, nullable=False, default=0)
+    image_url = Column(String(500), nullable=True)  # ImageKit URL
+    image_id = Column(String(255), nullable=True)  # ImageKit file ID for deletion
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
     

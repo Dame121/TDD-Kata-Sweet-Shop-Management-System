@@ -15,7 +15,8 @@ function AdminDashboard({ user, token, onLogout }) {
     name: '',
     category: '',
     price: '',
-    quantity_in_stock: ''
+    quantity_in_stock: '',
+    image: null
   });
 
   useEffect(() => {
@@ -69,17 +70,25 @@ function AdminDashboard({ user, token, onLogout }) {
     e.preventDefault();
     
     try {
+      // Create FormData for multipart/form-data submission
+      const formData = new FormData();
+      formData.append('name', newSweet.name);
+      formData.append('category', newSweet.category);
+      formData.append('price', parseFloat(newSweet.price));
+      formData.append('quantity_in_stock', parseInt(newSweet.quantity_in_stock));
+      
+      // Add image if selected
+      if (newSweet.image) {
+        formData.append('image', newSweet.image);
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/sweets/`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          'Authorization': `Bearer ${token}`
+          // Don't set Content-Type header - browser will set it with boundary for FormData
         },
-        body: JSON.stringify({
-          ...newSweet,
-          price: parseFloat(newSweet.price),
-          quantity_in_stock: parseInt(newSweet.quantity_in_stock)
-        })
+        body: formData
       });
 
       const data = await response.json();
@@ -87,7 +96,7 @@ function AdminDashboard({ user, token, onLogout }) {
       if (response.ok) {
         setMessage('✅ Sweet added successfully!');
         setShowAddSweet(false);
-        setNewSweet({ name: '', category: '', price: '', quantity_in_stock: '' });
+        setNewSweet({ name: '', category: '', price: '', quantity_in_stock: '', image: null });
         fetchSweets();
       } else {
         setMessage(`❌ ${data.detail || 'Failed to add sweet'}`);
@@ -311,6 +320,18 @@ function AdminDashboard({ user, token, onLogout }) {
                             onChange={(e) => setNewSweet({...newSweet, quantity_in_stock: e.target.value})}
                             required
                           />
+                          <div className="file-input-container">
+                            <label htmlFor="sweet-image" className="file-input-label">
+                              📷 {newSweet.image ? newSweet.image.name : 'Choose Image (Optional)'}
+                            </label>
+                            <input
+                              type="file"
+                              id="sweet-image"
+                              accept="image/*"
+                              onChange={(e) => setNewSweet({...newSweet, image: e.target.files[0]})}
+                              className="file-input"
+                            />
+                          </div>
                           <div className="modal-actions">
                             <button type="submit" className="submit-btn">Add Sweet</button>
                             <button type="button" onClick={() => setShowAddSweet(false)} className="cancel-btn">
@@ -326,6 +347,7 @@ function AdminDashboard({ user, token, onLogout }) {
                     <table>
                       <thead>
                         <tr>
+                          <th>Image</th>
                           <th>ID</th>
                           <th>Name</th>
                           <th>Category</th>
@@ -337,6 +359,17 @@ function AdminDashboard({ user, token, onLogout }) {
                       <tbody>
                         {sweets.map(sweet => (
                           <tr key={sweet.sweet_id}>
+                            <td>
+                              {sweet.image_url ? (
+                                <img 
+                                  src={sweet.image_url} 
+                                  alt={sweet.name}
+                                  className="sweet-thumbnail"
+                                />
+                              ) : (
+                                <div className="no-image">📷</div>
+                              )}
+                            </td>
                             <td>{sweet.sweet_id}</td>
                             <td>{sweet.name}</td>
                             <td><span className="category-badge">{sweet.category}</span></td>

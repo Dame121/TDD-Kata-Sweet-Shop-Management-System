@@ -147,7 +147,15 @@ function UserDashboard({ user, token, onLogout }) {
               ) : (
                 filteredSweets.map(sweet => (
                   <div key={sweet.sweet_id} className="sweet-card">
-                    <div className="sweet-emoji">🍭</div>
+                    {sweet.image_url ? (
+                      <img 
+                        src={sweet.image_url} 
+                        alt={sweet.name}
+                        className="sweet-image"
+                      />
+                    ) : (
+                      <div className="sweet-emoji">🍭</div>
+                    )}
                     <h3>{sweet.name}</h3>
                     <p className="category">{sweet.category}</p>
                     <div className="sweet-details">
