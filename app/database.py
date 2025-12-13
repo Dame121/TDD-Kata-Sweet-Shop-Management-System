@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, Boolean
+from sqlalchemy import create_engine, Column, Integer, String, Boolean, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -15,11 +15,20 @@ class User(Base):
     password = Column(String)
     is_admin = Column(Boolean, default=False)
 
+class Sweet(Base):
+    __tablename__ = "sweets"
+    sweet_id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False, index=True)
+    category = Column(String, nullable=False, index=True)
+    price = Column(Float, nullable=False)
+    quantity_in_stock = Column(Integer, nullable=False, default=0)
+
+
 Base.metadata.create_all(bind=engine)
 
 
 def get_db():
-    db=SessionLocal()
+    db = SessionLocal()
     try:
         yield db
     finally:
