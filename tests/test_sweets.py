@@ -26,7 +26,7 @@ class TestSweetCreation:
         }
         response = client.post(
             "/api/sweets/",
-            json=sweet_data,
+            data=sweet_data,
             headers=test_admin["headers"]
         )
         
@@ -48,7 +48,7 @@ class TestSweetCreation:
         }
         response = client.post(
             "/api/sweets/",
-            json=sweet_data,
+            data=sweet_data,
             headers=test_user_token["headers"]
         )
         
@@ -64,7 +64,7 @@ class TestSweetCreation:
         }
         response = client.post(
             "/api/sweets/",
-            json=duplicate_sweet,
+            data=duplicate_sweet,
             headers=test_admin["headers"]
         )
         
@@ -79,7 +79,7 @@ class TestSweetCreation:
             "price": 1.99,
             "quantity_in_stock": 10
         }
-        response = client.post("/api/sweets/", json=sweet_data)
+        response = client.post("/api/sweets/", data=sweet_data)
         
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
     

@@ -74,7 +74,7 @@ class TestAdminOperations:
         }
         response = client.post(
             "/api/sweets/",
-            json=sweet_data,
+            data=sweet_data,
             headers=test_admin["headers"]
         )
         
@@ -144,7 +144,7 @@ class TestAccessControl:
         }
         response = client.post(
             "/api/sweets/",
-            json=sweet_data,
+            data=sweet_data,
             headers=test_user_token["headers"]
         )
         

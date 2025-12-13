@@ -179,9 +179,10 @@ def create_sweets(client, test_admin, sample_sweets_data):
     """
     created_sweets = []
     for sweet_data in sample_sweets_data:
+        # Send as form data instead of JSON to match new endpoint signature
         response = client.post(
             "/api/sweets/",
-            json=sweet_data,
+            data=sweet_data,
             headers=test_admin["headers"]
         )
         assert response.status_code == 201
