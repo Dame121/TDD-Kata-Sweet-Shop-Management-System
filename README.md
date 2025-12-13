@@ -24,7 +24,36 @@ This project is a comprehensive sweet shop management system built with FastAPI 
 - 👥 View and manage users
 - 📊 Dashboard with inventory statistics
 
-## 🛠️ Technology Stack
+## � Screenshots
+
+### Authentication
+
+#### Login Page
+![Login Page](screenshots/1.png)
+
+#### Sign Up Page
+![Sign Up Page](screenshots/2.png)
+
+### User Dashboard
+
+#### Browse Sweets
+![User Dashboard - Browse](screenshots/3.png)
+
+#### Purchase Sweets
+![User Dashboard - Purchase](screenshots/4.png)
+
+### Admin Dashboard
+
+#### Dashboard Overview
+![Admin Dashboard - Overview](screenshots/5.png)
+
+#### Inventory Management
+![Admin Dashboard - Inventory](screenshots/6.png)
+
+#### Add/Edit Sweets
+![Admin Dashboard - Add Sweets](screenshots/7.png)
+
+## �🛠️ Technology Stack
 
 ### Backend
 - **Framework**: FastAPI (Python 3.12)
