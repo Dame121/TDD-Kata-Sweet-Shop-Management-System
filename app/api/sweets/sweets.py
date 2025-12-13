@@ -56,9 +56,17 @@ class TransactionResponse(BaseModel):
         from_attributes = True
 
 
-# CREATE - Add a new sweet
+# CREATE - Add a new sweet (Admin only)
 @router.post("/", response_model=SweetResponse, status_code=status.HTTP_201_CREATED)
-def create_sweet(sweet: SweetCreate, db: Session = Depends(get_db)):
+def create_sweet(
+    sweet: SweetCreate,
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(get_current_admin_user)
+):
+    """
+    Add a new sweet to the inventory.
+    Requires admin authentication.
+    """
     # Check if sweet name already exists
     db_sweet = db.query(Sweet).filter(Sweet.name == sweet.name).first()
     if db_sweet:
@@ -145,9 +153,18 @@ def get_sweets_by_category(category: str, db: Session = Depends(get_db)):
     return sweets
 
 
-# UPDATE - Update a sweet
+# UPDATE - Update a sweet (Admin only)
 @router.put("/{sweet_id}", response_model=SweetResponse)
-def update_sweet(sweet_id: int, sweet_update: SweetUpdate, db: Session = Depends(get_db)):
+def update_sweet(
+    sweet_id: int,
+    sweet_update: SweetUpdate,
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(get_current_admin_user)
+):
+    """
+    Update a sweet's details.
+    Requires admin authentication.
+    """
     sweet = db.query(Sweet).filter(Sweet.sweet_id == sweet_id).first()
     if not sweet:
         raise HTTPException(status_code=404, detail="Sweet not found")
@@ -171,9 +188,17 @@ def update_sweet(sweet_id: int, sweet_update: SweetUpdate, db: Session = Depends
     return sweet
 
 
-# DELETE - Delete a sweet
+# DELETE - Delete a sweet (Admin only)
 @router.delete("/{sweet_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_sweet(sweet_id: int, db: Session = Depends(get_db)):
+def delete_sweet(
+    sweet_id: int,
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(get_current_admin_user)
+):
+    """
+    Delete a sweet from the inventory.
+    Requires admin authentication.
+    """
     sweet = db.query(Sweet).filter(Sweet.sweet_id == sweet_id).first()
     if not sweet:
         raise HTTPException(status_code=404, detail="Sweet not found")
