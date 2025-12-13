@@ -1,8 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
 from app.database import Base, engine
 from app.api.auth import users_router, admins_router
 from app.api.sweets import router as sweets_router
+
+# Load environment variables
+load_dotenv()
 
 # Create tables
 Base.metadata.create_all(bind=engine)
