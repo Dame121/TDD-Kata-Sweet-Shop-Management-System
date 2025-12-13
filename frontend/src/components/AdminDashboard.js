@@ -26,8 +26,19 @@ function AdminDashboard({ user, token, onLogout }) {
     category: '',
     price: '',
     quantity_in_stock: '',
-    image: null
+    image: null,
+    imagePreview: null
   });
+  
+  const [messageType, setMessageType] = useState(''); // 'success', 'error', 'info'
+
+  // Helper function to show messages
+  const showMessage = (text, type = 'info') => {
+    setMessage(text);
+    setMessageType(type);
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => setMessage(''), 5000);
+  };
 
   useEffect(() => {
     fetchData();
@@ -104,15 +115,15 @@ function AdminDashboard({ user, token, onLogout }) {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage('✅ Sweet added successfully!');
+        showMessage('Sweet added successfully!', 'success');
         setShowAddSweet(false);
         setNewSweet({ name: '', category: '', price: '', quantity_in_stock: '', image: null });
         fetchSweets();
       } else {
-        setMessage(`❌ ${data.detail || 'Failed to add sweet'}`);
+        showMessage(data.detail || 'Failed to add sweet', 'error');
       }
     } catch (error) {
-      setMessage(`❌ Error: ${error.message}`);
+      showMessage(`Error: ${error.message}`, 'error');
     }
   };
 
@@ -138,31 +149,40 @@ function AdminDashboard({ user, token, onLogout }) {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage('✅ Sweet updated successfully!');
-        
         // If there's a new image, upload it
         if (editSweet.image) {
           const formData = new FormData();
           formData.append('image', editSweet.image);
           
-          await fetch(`${API_BASE_URL}/api/sweets/${editingSweet.sweet_id}/image`, {
+          const imageResponse = await fetch(`${API_BASE_URL}/api/sweets/${editingSweet.sweet_id}/image`, {
             method: 'PUT',
             headers: {
               'Authorization': `Bearer ${token}`
             },
             body: formData
           });
+          
+          if (!imageResponse.ok) {
+            const imageError = await imageResponse.json();
+            showMessage(`Sweet updated but image upload failed: ${imageError.detail || 'Unknown error'}`, 'error');
+            setShowEditSweet(false);
+            setEditingSweet(null);
+            setEditSweet({ name: '', category: '', price: '', quantity_in_stock: '', image: null, imagePreview: null });
+            fetchSweets();
+            return;
+          }
         }
         
+        showMessage('Sweet updated successfully!', 'success');
         setShowEditSweet(false);
         setEditingSweet(null);
-        setEditSweet({ name: '', category: '', price: '', quantity_in_stock: '', image: null });
+        setEditSweet({ name: '', category: '', price: '', quantity_in_stock: '', image: null, imagePreview: null });
         fetchSweets();
       } else {
-        setMessage(`❌ ${data.detail || 'Failed to update sweet'}`);
+        showMessage(data.detail || 'Failed to update sweet', 'error');
       }
     } catch (error) {
-      setMessage(`❌ Error: ${error.message}`);
+      showMessage(`Error: ${error.message}`, 'error');
     }
   };
 
@@ -173,16 +193,33 @@ function AdminDashboard({ user, token, onLogout }) {
       category: sweet.category,
       price: sweet.price.toString(),
       quantity_in_stock: sweet.quantity_in_stock.toString(),
-      image: null
+      image: null,
+      imagePreview: sweet.image_url || null
     });
     setShowEditSweet(true);
+  };
+
+  // Handle image selection with preview
+  const handleImageChange = (e, isEdit = false) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (isEdit) {
+          setEditSweet({...editSweet, image: file, imagePreview: reader.result});
+        } else {
+          setNewSweet({...newSweet, image: file});
+        }
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleRestock = async (sweetId, sweetName) => {
     const quantity = prompt(`How many ${sweetName} would you like to add to stock?`);
     
     if (!quantity || isNaN(quantity) || quantity <= 0) {
-      setMessage('Invalid quantity');
+      showMessage('Please enter a valid quantity', 'error');
       return;
     }
 
@@ -199,13 +236,13 @@ function AdminDashboard({ user, token, onLogout }) {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage(`✅ Successfully restocked ${quantity} ${sweetName}!`);
+        showMessage(`Successfully restocked ${quantity} ${sweetName}!`, 'success');
         fetchSweets();
       } else {
-        setMessage(`❌ ${data.detail || 'Restock failed'}`);
+        showMessage(data.detail || 'Restock failed', 'error');
       }
     } catch (error) {
-      setMessage(`❌ Error: ${error.message}`);
+      showMessage(`Error: ${error.message}`, 'error');
     }
   };
 
@@ -223,14 +260,14 @@ function AdminDashboard({ user, token, onLogout }) {
       });
 
       if (response.ok) {
-        setMessage(`✅ Successfully deleted ${sweetName}`);
+        showMessage(`Successfully deleted ${sweetName}`, 'success');
         fetchSweets();
       } else {
         const data = await response.json();
-        setMessage(`❌ ${data.detail || 'Delete failed'}`);
+        showMessage(data.detail || 'Delete failed', 'error');
       }
     } catch (error) {
-      setMessage(`❌ Error: ${error.message}`);
+      showMessage(`Error: ${error.message}`, 'error');
     }
   };
 
@@ -248,14 +285,14 @@ function AdminDashboard({ user, token, onLogout }) {
       });
 
       if (response.ok) {
-        setMessage(`✅ Successfully deleted user ${username}`);
+        showMessage(`Successfully deleted user ${username}`, 'success');
         fetchUsers();
       } else {
         const data = await response.json();
-        setMessage(`❌ ${data.detail || 'Delete failed'}`);
+        showMessage(data.detail || 'Delete failed', 'error');
       }
     } catch (error) {
-      setMessage(`❌ Error: ${error.message}`);
+      showMessage(`Error: ${error.message}`, 'error');
     }
   };
 
@@ -305,9 +342,16 @@ function AdminDashboard({ user, token, onLogout }) {
       <main className="dashboard-main">
         <div className="dashboard-container">
           {message && (
-            <div className={`message ${message.includes('✅') ? 'success' : 'error'}`}>
-              {message}
-              <button onClick={() => setMessage('')} className="close-btn">×</button>
+            <div className={`toast-message ${messageType}`}>
+              <div className="toast-icon">
+                {messageType === 'success' && <i className="bi bi-check-circle-fill"></i>}
+                {messageType === 'error' && <i className="bi bi-exclamation-circle-fill"></i>}
+                {messageType === 'info' && <i className="bi bi-info-circle-fill"></i>}
+              </div>
+              <span className="toast-text">{message}</span>
+              <button onClick={() => setMessage('')} className="toast-close">
+                <i className="bi bi-x-lg"></i>
+              </button>
             </div>
           )}
 
@@ -386,53 +430,81 @@ function AdminDashboard({ user, token, onLogout }) {
                   {showAddSweet && (
                     <div className="modal-overlay" onClick={() => setShowAddSweet(false)}>
                       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <h3>Add New Sweet</h3>
+                        <div className="modal-header">
+                          <h3><i className="bi bi-plus-circle"></i> Add New Sweet</h3>
+                          <button type="button" onClick={() => setShowAddSweet(false)} className="modal-close-btn">
+                            <i className="bi bi-x-lg"></i>
+                          </button>
+                        </div>
                         <form onSubmit={handleAddSweet}>
-                          <input
-                            type="text"
-                            placeholder="Sweet Name"
-                            value={newSweet.name}
-                            onChange={(e) => setNewSweet({...newSweet, name: e.target.value})}
-                            required
-                          />
-                          <input
-                            type="text"
-                            placeholder="Category"
-                            value={newSweet.category}
-                            onChange={(e) => setNewSweet({...newSweet, category: e.target.value})}
-                            required
-                          />
-                          <input
-                            type="number"
-                            step="0.01"
-                            placeholder="Price"
-                            value={newSweet.price}
-                            onChange={(e) => setNewSweet({...newSweet, price: e.target.value})}
-                            required
-                          />
-                          <input
-                            type="number"
-                            placeholder="Initial Stock"
-                            value={newSweet.quantity_in_stock}
-                            onChange={(e) => setNewSweet({...newSweet, quantity_in_stock: e.target.value})}
-                            required
-                          />
-                          <div className="file-input-container">
-                            <label htmlFor="sweet-image" className="file-input-label">
-                              📷 {newSweet.image ? newSweet.image.name : 'Choose Image (Optional)'}
-                            </label>
+                          <div className="form-group">
+                            <label htmlFor="sweet-name"><i className="bi bi-tag"></i> Sweet Name</label>
                             <input
-                              type="file"
-                              id="sweet-image"
-                              accept="image/*"
-                              onChange={(e) => setNewSweet({...newSweet, image: e.target.files[0]})}
-                              className="file-input"
+                              type="text"
+                              id="sweet-name"
+                              placeholder="Enter sweet name"
+                              value={newSweet.name}
+                              onChange={(e) => setNewSweet({...newSweet, name: e.target.value})}
+                              required
                             />
                           </div>
+                          <div className="form-group">
+                            <label htmlFor="sweet-category"><i className="bi bi-grid"></i> Category</label>
+                            <input
+                              type="text"
+                              id="sweet-category"
+                              placeholder="e.g., Traditional, Milk Based"
+                              value={newSweet.category}
+                              onChange={(e) => setNewSweet({...newSweet, category: e.target.value})}
+                              required
+                            />
+                          </div>
+                          <div className="form-row">
+                            <div className="form-group">
+                              <label htmlFor="sweet-price"><i className="bi bi-currency-rupee"></i> Price</label>
+                              <input
+                                type="number"
+                                id="sweet-price"
+                                step="0.01"
+                                placeholder="0.00"
+                                value={newSweet.price}
+                                onChange={(e) => setNewSweet({...newSweet, price: e.target.value})}
+                                required
+                              />
+                            </div>
+                            <div className="form-group">
+                              <label htmlFor="sweet-stock"><i className="bi bi-box-seam"></i> Initial Stock</label>
+                              <input
+                                type="number"
+                                id="sweet-stock"
+                                placeholder="0"
+                                value={newSweet.quantity_in_stock}
+                                onChange={(e) => setNewSweet({...newSweet, quantity_in_stock: e.target.value})}
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div className="form-group">
+                            <label><i className="bi bi-image"></i> Product Image (Optional)</label>
+                            <div className="file-input-container">
+                              <label htmlFor="sweet-image" className="file-input-label">
+                                <i className="bi bi-cloud-upload"></i> {newSweet.image ? newSweet.image.name : 'Choose Image'}
+                              </label>
+                              <input
+                                type="file"
+                                id="sweet-image"
+                                accept="image/*"
+                                onChange={(e) => setNewSweet({...newSweet, image: e.target.files[0]})}
+                                className="file-input"
+                              />
+                            </div>
+                          </div>
                           <div className="modal-actions">
-                            <button type="submit" className="submit-btn">Add Sweet</button>
                             <button type="button" onClick={() => setShowAddSweet(false)} className="cancel-btn">
-                              Cancel
+                              <i className="bi bi-x-circle"></i> Cancel
+                            </button>
+                            <button type="submit" className="submit-btn">
+                              <i className="bi bi-check-circle"></i> Add Sweet
                             </button>
                           </div>
                         </form>
@@ -442,50 +514,92 @@ function AdminDashboard({ user, token, onLogout }) {
 
                   {showEditSweet && (
                     <div className="modal-overlay" onClick={() => setShowEditSweet(false)}>
-                      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <h3>Edit Sweet</h3>
-                        <form onSubmit={handleUpdateSweet}>
-                          <input
-                            type="text"
-                            placeholder="Sweet Name"
-                            value={editSweet.name}
-                            onChange={(e) => setEditSweet({...editSweet, name: e.target.value})}
-                          />
-                          <input
-                            type="text"
-                            placeholder="Category"
-                            value={editSweet.category}
-                            onChange={(e) => setEditSweet({...editSweet, category: e.target.value})}
-                          />
-                          <input
-                            type="number"
-                            step="0.01"
-                            placeholder="Price"
-                            value={editSweet.price}
-                            onChange={(e) => setEditSweet({...editSweet, price: e.target.value})}
-                          />
-                          <input
-                            type="number"
-                            placeholder="Stock Quantity"
-                            value={editSweet.quantity_in_stock}
-                            onChange={(e) => setEditSweet({...editSweet, quantity_in_stock: e.target.value})}
-                          />
-                          <div className="file-input-container">
-                            <label htmlFor="edit-sweet-image" className="file-input-label">
-                              📷 {editSweet.image ? editSweet.image.name : 'Update Image (Optional)'}
-                            </label>
-                            <input
-                              type="file"
-                              id="edit-sweet-image"
-                              accept="image/*"
-                              onChange={(e) => setEditSweet({...editSweet, image: e.target.files[0]})}
-                              className="file-input"
-                            />
+                      <div className="modal-content edit-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                          <h3><i className="bi bi-pencil-square"></i> Edit Sweet</h3>
+                          <button type="button" onClick={() => setShowEditSweet(false)} className="modal-close-btn">
+                            <i className="bi bi-x-lg"></i>
+                          </button>
+                        </div>
+                        <form onSubmit={handleUpdateSweet} className="edit-form">
+                          <div className="form-grid">
+                            <div className="form-left">
+                              <div className="form-group">
+                                <label htmlFor="edit-name"><i className="bi bi-tag"></i> Sweet Name</label>
+                                <input
+                                  type="text"
+                                  id="edit-name"
+                                  placeholder="Enter sweet name"
+                                  value={editSweet.name}
+                                  onChange={(e) => setEditSweet({...editSweet, name: e.target.value})}
+                                />
+                              </div>
+                              <div className="form-group">
+                                <label htmlFor="edit-category"><i className="bi bi-grid"></i> Category</label>
+                                <input
+                                  type="text"
+                                  id="edit-category"
+                                  placeholder="Enter category"
+                                  value={editSweet.category}
+                                  onChange={(e) => setEditSweet({...editSweet, category: e.target.value})}
+                                />
+                              </div>
+                              <div className="form-row">
+                                <div className="form-group">
+                                  <label htmlFor="edit-price"><i className="bi bi-currency-rupee"></i> Price</label>
+                                  <input
+                                    type="number"
+                                    id="edit-price"
+                                    step="0.01"
+                                    placeholder="0.00"
+                                    value={editSweet.price}
+                                    onChange={(e) => setEditSweet({...editSweet, price: e.target.value})}
+                                  />
+                                </div>
+                                <div className="form-group">
+                                  <label htmlFor="edit-stock"><i className="bi bi-box-seam"></i> Stock</label>
+                                  <input
+                                    type="number"
+                                    id="edit-stock"
+                                    placeholder="0"
+                                    value={editSweet.quantity_in_stock}
+                                    onChange={(e) => setEditSweet({...editSweet, quantity_in_stock: e.target.value})}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                            <div className="form-right">
+                              <div className="image-upload-section">
+                                <label><i className="bi bi-image"></i> Product Image</label>
+                                <div className="image-preview-box">
+                                  {editSweet.imagePreview ? (
+                                    <img src={editSweet.imagePreview} alt="Preview" className="preview-image" />
+                                  ) : (
+                                    <div className="no-preview">
+                                      <i className="bi bi-image"></i>
+                                      <span>No image</span>
+                                    </div>
+                                  )}
+                                </div>
+                                <label htmlFor="edit-sweet-image" className="file-input-label">
+                                  <i className="bi bi-cloud-upload"></i> {editSweet.image ? 'Change Image' : 'Upload New Image'}
+                                </label>
+                                <input
+                                  type="file"
+                                  id="edit-sweet-image"
+                                  accept="image/*"
+                                  onChange={(e) => handleImageChange(e, true)}
+                                  className="file-input"
+                                />
+                              </div>
+                            </div>
                           </div>
                           <div className="modal-actions">
-                            <button type="submit" className="submit-btn">Update Sweet</button>
                             <button type="button" onClick={() => setShowEditSweet(false)} className="cancel-btn">
-                              Cancel
+                              <i className="bi bi-x-circle"></i> Cancel
+                            </button>
+                            <button type="submit" className="submit-btn">
+                              <i className="bi bi-check-circle"></i> Update Sweet
                             </button>
                           </div>
                         </form>

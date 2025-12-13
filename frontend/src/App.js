@@ -8,17 +8,28 @@ const API_BASE_URL = 'http://localhost:8000';
 function App() {
   const [activeTab, setActiveTab] = useState('login');
   const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState(''); // 'success', 'error', 'info'
   const [token, setToken] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  // Helper function to show messages
+  const showMessage = (text, type = 'info') => {
+    setMessage(text);
+    setMessageType(type);
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => setMessage(''), 5000);
+  };
   
   // Signup form state
   const [signupData, setSignupData] = useState({
     username: '',
     email: '',
-    password: '',
-    is_admin: false
+    password: ''
   });
+
+  // Validation errors state
+  const [validationErrors, setValidationErrors] = useState({});
 
   // Login form state
   const [loginData, setLoginData] = useState({
@@ -42,10 +53,53 @@ function App() {
     });
   };
 
+  // Validation functions
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password) => {
+    // At least 6 characters and at least one number
+    const hasMinLength = password.length >= 6;
+    const hasNumber = /\d/.test(password);
+    return { isValid: hasMinLength && hasNumber, hasMinLength, hasNumber };
+  };
+
+  const validateUsername = (username) => {
+    return username.length >= 3 && /^[a-zA-Z0-9_]+$/.test(username);
+  };
+
   // Handle signup submission
   const handleSignup = async (e) => {
     e.preventDefault();
     setMessage('');
+    setValidationErrors({});
+
+    // Validate all fields
+    const errors = {};
+    
+    if (!validateUsername(signupData.username)) {
+      errors.username = 'Username must be at least 3 characters (letters, numbers, underscore only)';
+    }
+    
+    if (!validateEmail(signupData.email)) {
+      errors.email = 'Please enter a valid email address';
+    }
+    
+    const passwordValidation = validatePassword(signupData.password);
+    if (!passwordValidation.isValid) {
+      if (!passwordValidation.hasMinLength) {
+        errors.password = 'Password must be at least 6 characters';
+      } else if (!passwordValidation.hasNumber) {
+        errors.password = 'Password must contain at least one number';
+      }
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      return;
+    }
     
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
@@ -53,27 +107,30 @@ function App() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(signupData)
+        body: JSON.stringify({
+          ...signupData,
+          is_admin: false  // Users can only create regular accounts
+        })
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        setMessage(`✅ Success: User registered successfully!`);
+        showMessage('Account created successfully! Please login.', 'success');
         // Clear form
         setSignupData({
           username: '',
           email: '',
-          password: '',
-          is_admin: false
+          password: ''
         });
+        setValidationErrors({});
         // Switch to login tab
         setTimeout(() => setActiveTab('login'), 2000);
       } else {
-        setMessage(`❌ Error: ${data.detail || 'Signup failed'}`);
+        showMessage(data.detail || 'Signup failed', 'error');
       }
     } catch (error) {
-      setMessage(`❌ Network Error: ${error.message}`);
+      showMessage(`Network Error: ${error.message}`, 'error');
     }
   };
 
@@ -95,7 +152,7 @@ function App() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage(`✅ Success: Welcome back, ${data.user.username}!`);
+        showMessage(`Welcome back, ${data.user.username}!`, 'success');
         setToken(data.access_token);
         setCurrentUser(data.user);
         setIsAuthenticated(true);
@@ -105,10 +162,10 @@ function App() {
           password: ''
         });
       } else {
-        setMessage(`❌ Error: ${data.detail || 'Login failed'}`);
+        showMessage(data.detail || 'Login failed', 'error');
       }
     } catch (error) {
-      setMessage(`❌ Network Error: ${error.message}`);
+      showMessage(`Network Error: ${error.message}`, 'error');
     }
   };
 
@@ -160,8 +217,16 @@ function App() {
         </div>
 
         {message && (
-          <div className={`message ${message.includes('✅') ? 'success' : 'error'}`}>
-            {message}
+          <div className={`toast-message ${messageType}`}>
+            <div className="toast-icon">
+              {messageType === 'success' && <i className="bi bi-check-circle-fill"></i>}
+              {messageType === 'error' && <i className="bi bi-exclamation-circle-fill"></i>}
+              {messageType === 'info' && <i className="bi bi-info-circle-fill"></i>}
+            </div>
+            <span className="toast-text">{message}</span>
+            <button onClick={() => setMessage('')} className="toast-close">
+              <i className="bi bi-x-lg"></i>
+            </button>
           </div>
         )}
 
@@ -208,8 +273,10 @@ function App() {
                 value={signupData.username}
                 onChange={handleSignupChange}
                 required
-                placeholder="Enter username"
+                placeholder="At least 3 characters"
+                className={validationErrors.username ? 'input-error' : ''}
               />
+              {validationErrors.username && <span className="error-text">{validationErrors.username}</span>}
             </div>
 
             <div className="form-group">
@@ -221,8 +288,10 @@ function App() {
                 value={signupData.email}
                 onChange={handleSignupChange}
                 required
-                placeholder="Enter email"
+                placeholder="your@email.com"
+                className={validationErrors.email ? 'input-error' : ''}
               />
+              {validationErrors.email && <span className="error-text">{validationErrors.email}</span>}
             </div>
 
             <div className="form-group">
@@ -234,21 +303,10 @@ function App() {
                 value={signupData.password}
                 onChange={handleSignupChange}
                 required
-                placeholder="Enter password"
+                placeholder="Min 6 chars with a number"
+                className={validationErrors.password ? 'input-error' : ''}
               />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="signup-is-admin">Account Type:</label>
-              <select
-                id="signup-is-admin"
-                name="is_admin"
-                value={signupData.is_admin}
-                onChange={(e) => setSignupData({...signupData, is_admin: e.target.value === 'true'})}
-              >
-                <option value="false">Regular User</option>
-                <option value="true">Admin</option>
-              </select>
+              {validationErrors.password && <span className="error-text">{validationErrors.password}</span>}
             </div>
 
             <button type="submit" className="submit-btn">
@@ -258,10 +316,25 @@ function App() {
         )}
 
         <div className="info-box">
-          <h3><i className="bi bi-info-circle"></i> Quick Info</h3>
-          <p><i className="bi bi-person"></i> <strong>User Account:</strong> Browse and purchase sweets</p>
-          <p><i className="bi bi-shield-check"></i> <strong>Admin Account:</strong> Manage inventory, view users, and analytics</p>
-          <p><i className="bi bi-lock"></i> All communications are secured with JWT tokens</p>
+          <h3><i className="bi bi-stars"></i> Why Choose Our Sweet Shop?</h3>
+          <div className="features-grid">
+            <div className="feature">
+              <i className="bi bi-gift"></i>
+              <span>Premium Quality Sweets</span>
+            </div>
+            <div className="feature">
+              <i className="bi bi-truck"></i>
+              <span>Fast & Fresh Delivery</span>
+            </div>
+            <div className="feature">
+              <i className="bi bi-heart"></i>
+              <span>Made with Love</span>
+            </div>
+            <div className="feature">
+              <i className="bi bi-shield-check"></i>
+              <span>100% Secure Payments</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
