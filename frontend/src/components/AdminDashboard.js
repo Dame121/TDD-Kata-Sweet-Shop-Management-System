@@ -269,12 +269,12 @@ function AdminDashboard({ user, token, onLogout }) {
       <header className="dashboard-header">
         <div className="header-content">
           <div className="brand">
-            <h1>🍬 Sweet Shop Admin</h1>
+            <h1><i className="bi bi-shop"></i> Sweet Shop Admin</h1>
             <p>Welcome, Admin {user.username}</p>
           </div>
           <div className="user-info">
-            <span className="admin-badge">👑 Admin</span>
-            <button onClick={onLogout} className="logout-btn">Logout</button>
+            <span className="admin-badge"><i className="bi bi-shield-check"></i> Admin</span>
+            <button onClick={onLogout} className="logout-btn"><i className="bi bi-box-arrow-right"></i> Logout</button>
           </div>
         </div>
       </header>
@@ -285,19 +285,19 @@ function AdminDashboard({ user, token, onLogout }) {
           className={activeSection === 'overview' ? 'active' : ''}
           onClick={() => setActiveSection('overview')}
         >
-          📊 Overview
+          <i className="bi bi-speedometer2"></i> Overview
         </button>
         <button
           className={activeSection === 'inventory' ? 'active' : ''}
           onClick={() => setActiveSection('inventory')}
         >
-          📦 Inventory
+          <i className="bi bi-box-seam"></i> Inventory
         </button>
         <button
           className={activeSection === 'users' ? 'active' : ''}
           onClick={() => setActiveSection('users')}
         >
-          👥 Users
+          <i className="bi bi-people"></i> Users
         </button>
       </nav>
 
@@ -321,35 +321,35 @@ function AdminDashboard({ user, token, onLogout }) {
                   <h2>Dashboard Overview</h2>
                   <div className="stats-grid">
                     <div className="stat-card">
-                      <div className="stat-icon">📦</div>
+                      <div className="stat-icon"><i className="bi bi-boxes"></i></div>
                       <div className="stat-info">
                         <h3>Total Stock</h3>
                         <p className="stat-value">{totalStock}</p>
                       </div>
                     </div>
                     <div className="stat-card">
-                      <div className="stat-icon">🍭</div>
+                      <div className="stat-icon"><i className="bi bi-gift"></i></div>
                       <div className="stat-info">
                         <h3>Products</h3>
                         <p className="stat-value">{sweets.length}</p>
                       </div>
                     </div>
                     <div className="stat-card">
-                      <div className="stat-icon">⚠️</div>
+                      <div className="stat-icon"><i className="bi bi-exclamation-triangle"></i></div>
                       <div className="stat-info">
                         <h3>Low Stock Items</h3>
                         <p className="stat-value">{lowStockItems}</p>
                       </div>
                     </div>
                     <div className="stat-card">
-                      <div className="stat-icon">💰</div>
+                      <div className="stat-icon"><i className="bi bi-currency-rupee"></i></div>
                       <div className="stat-info">
                         <h3>Inventory Value</h3>
                         <p className="stat-value">₹{totalValue.toFixed(2)}</p>
                       </div>
                     </div>
                     <div className="stat-card">
-                      <div className="stat-icon">👥</div>
+                      <div className="stat-icon"><i className="bi bi-people-fill"></i></div>
                       <div className="stat-info">
                         <h3>Total Users</h3>
                         <p className="stat-value">{users.length}</p>
@@ -359,7 +359,7 @@ function AdminDashboard({ user, token, onLogout }) {
 
                   {lowStockItems > 0 && (
                     <div className="alert-section">
-                      <h3>⚠️ Low Stock Alert</h3>
+                      <h3><i className="bi bi-exclamation-triangle-fill"></i> Low Stock Alert</h3>
                       <div className="alert-items">
                         {sweets.filter(sweet => sweet.quantity_in_stock < 10).map(sweet => (
                           <div key={sweet.sweet_id} className="alert-item">
@@ -379,7 +379,7 @@ function AdminDashboard({ user, token, onLogout }) {
                   <div className="section-header">
                     <h2>Inventory Management</h2>
                     <button onClick={() => setShowAddSweet(true)} className="add-btn">
-                      ➕ Add New Sweet
+                      <i className="bi bi-plus-circle"></i> Add New Sweet
                     </button>
                   </div>
 
@@ -517,7 +517,7 @@ function AdminDashboard({ user, token, onLogout }) {
                                   className="sweet-thumbnail"
                                 />
                               ) : (
-                                <div className="no-image">📷</div>
+                                <div className="no-image"><i className="bi bi-image"></i></div>
                               )}
                             </td>
                             <td>{sweet.sweet_id}</td>
@@ -534,19 +534,19 @@ function AdminDashboard({ user, token, onLogout }) {
                                 onClick={() => openEditModal(sweet)}
                                 className="action-btn edit"
                               >
-                                ✏️ Edit
+                                <i className="bi bi-pencil"></i> Edit
                               </button>
                               <button
                                 onClick={() => handleRestock(sweet.sweet_id, sweet.name)}
                                 className="action-btn restock"
                               >
-                                📦 Restock
+                                <i className="bi bi-box-seam"></i> Restock
                               </button>
                               <button
                                 onClick={() => handleDeleteSweet(sweet.sweet_id, sweet.name)}
                                 className="action-btn delete"
                               >
-                                🗑️ Delete
+                                <i className="bi bi-trash"></i> Delete
                               </button>
                             </td>
                           </tr>
@@ -581,11 +581,11 @@ function AdminDashboard({ user, token, onLogout }) {
                             <td>{usr.email}</td>
                             <td>
                               <span className={`role-badge ${usr.is_admin ? 'admin' : 'user'}`}>
-                                {usr.is_admin ? '👑 Admin' : '👤 User'}
+                                {usr.is_admin ? <><i className="bi bi-shield-check"></i> Admin</> : <><i className="bi bi-person"></i> User</>}
                               </span>
                             </td>
                             <td>
-                              <span className="status-badge active">Active</span>
+                              <span className="status-badge active"><i className="bi bi-check-circle"></i> Active</span>
                             </td>
                             <td>
                               {usr.user_id !== user.user_id && (
@@ -593,7 +593,7 @@ function AdminDashboard({ user, token, onLogout }) {
                                   onClick={() => handleDeleteUser(usr.user_id, usr.username)}
                                   className="action-btn delete"
                                 >
-                                  🗑️ Delete
+                                  <i className="bi bi-trash"></i> Delete
                                 </button>
                               )}
                             </td>

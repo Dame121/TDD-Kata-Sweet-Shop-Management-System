@@ -134,7 +134,7 @@ function App() {
     <div className="App">
       <div className="container">
         <div className="header">
-          <h1>🍬 Sweet Shop Management</h1>
+          <h1><i className="bi bi-shop"></i> Sweet Shop Management</h1>
           <p>Welcome! Please login or create an account</p>
         </div>
 
@@ -258,10 +258,10 @@ function App() {
         )}
 
         <div className="info-box">
-          <h3>ℹ️ Quick Info</h3>
-          <p>👤 <strong>User Account:</strong> Browse and purchase sweets</p>
-          <p>👑 <strong>Admin Account:</strong> Manage inventory, view users, and analytics</p>
-          <p>🔒 All communications are secured with JWT tokens</p>
+          <h3><i className="bi bi-info-circle"></i> Quick Info</h3>
+          <p><i className="bi bi-person"></i> <strong>User Account:</strong> Browse and purchase sweets</p>
+          <p><i className="bi bi-shield-check"></i> <strong>Admin Account:</strong> Manage inventory, view users, and analytics</p>
+          <p><i className="bi bi-lock"></i> All communications are secured with JWT tokens</p>
         </div>
       </div>
     </div>

@@ -9,6 +9,8 @@ function UserDashboard({ user, token, onLogout }) {
   const [message, setMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -69,7 +71,7 @@ function UserDashboard({ user, token, onLogout }) {
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      if (searchTerm || selectedCategory) {
+      if (searchTerm || selectedCategory || minPrice || maxPrice) {
         searchSweets(searchTerm, selectedCategory);
       } else {
         fetchSweets();
@@ -77,7 +79,7 @@ function UserDashboard({ user, token, onLogout }) {
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm, selectedCategory]);
+  }, [searchTerm, selectedCategory, minPrice, maxPrice]);
 
   const handlePurchase = async (sweetId, sweetName) => {
     const quantity = prompt(`How many ${sweetName} would you like to purchase?`);
@@ -115,8 +117,12 @@ function UserDashboard({ user, token, onLogout }) {
     }
   };
 
-  // Remove the manual filtering since we're using API search now
-  const filteredSweets = sweets;
+  // Filter sweets by price range on client side
+  const filteredSweets = sweets.filter(sweet => {
+    const min = parseFloat(minPrice) || 0;
+    const max = parseFloat(maxPrice) || Infinity;
+    return sweet.price >= min && sweet.price <= max;
+  });
 
   return (
     <div className="user-dashboard">
@@ -124,12 +130,12 @@ function UserDashboard({ user, token, onLogout }) {
       <header className="dashboard-header">
         <div className="header-content">
           <div className="brand">
-            <h1>🍬 Sweet Shop</h1>
+            <h1><i className="bi bi-shop"></i> Sweet Shop</h1>
             <p>Welcome back, {user.username}!</p>
           </div>
           <div className="user-info">
-            <span className="user-badge">👤 User</span>
-            <button onClick={onLogout} className="logout-btn">Logout</button>
+            <span className="user-badge"><i className="bi bi-person-circle"></i> User</span>
+            <button onClick={onLogout} className="logout-btn"><i className="bi bi-box-arrow-right"></i> Logout</button>
           </div>
         </div>
       </header>
@@ -148,7 +154,7 @@ function UserDashboard({ user, token, onLogout }) {
             <div className="search-box">
               <input
                 type="text"
-                placeholder="🔍 Search sweets..."
+                placeholder="Search by name..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="search-input"
@@ -165,6 +171,25 @@ function UserDashboard({ user, token, onLogout }) {
                   <option key={category} value={category}>{category}</option>
                 ))}
               </select>
+            </div>
+            <div className="price-filter">
+              <input
+                type="number"
+                placeholder="Min Price"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+                className="price-input"
+                min="0"
+              />
+              <span className="price-separator">—</span>
+              <input
+                type="number"
+                placeholder="Max Price"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+                className="price-input"
+                min="0"
+              />
             </div>
           </div>
 
@@ -213,7 +238,7 @@ function UserDashboard({ user, token, onLogout }) {
                       disabled={sweet.quantity_in_stock === 0}
                       className="purchase-btn"
                     >
-                      {sweet.quantity_in_stock > 0 ? '🛒 Purchase' : 'Out of Stock'}
+                      {sweet.quantity_in_stock > 0 ? <><i className="bi bi-cart-plus"></i> Purchase</> : <><i className="bi bi-x-circle"></i> Out of Stock</>}
                     </button>
                   </div>
                 ))
