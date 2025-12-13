@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import './App.css';
+import UserDashboard from './components/UserDashboard';
+import AdminDashboard from './components/AdminDashboard';
 
 const API_BASE_URL = 'http://localhost:8000';
 
 function App() {
-  const [activeTab, setActiveTab] = useState('signup');
+  const [activeTab, setActiveTab] = useState('login');
   const [message, setMessage] = useState('');
   const [token, setToken] = useState('');
+  const [currentUser, setCurrentUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   
   // Signup form state
   const [signupData, setSignupData] = useState({
@@ -55,7 +59,7 @@ function App() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage(`✅ Success: ${data.message || 'User registered successfully!'}`);
+        setMessage(`✅ Success: User registered successfully!`);
         // Clear form
         setSignupData({
           username: '',
@@ -63,8 +67,10 @@ function App() {
           password: '',
           is_admin: false
         });
+        // Switch to login tab
+        setTimeout(() => setActiveTab('login'), 2000);
       } else {
-        setMessage(`❌ Error: ${data.error || 'Signup failed'}`);
+        setMessage(`❌ Error: ${data.detail || 'Signup failed'}`);
       }
     } catch (error) {
       setMessage(`❌ Network Error: ${error.message}`);
@@ -91,47 +97,65 @@ function App() {
       if (response.ok) {
         setMessage(`✅ Success: Welcome back, ${data.user.username}!`);
         setToken(data.access_token);
+        setCurrentUser(data.user);
+        setIsAuthenticated(true);
         // Clear form
         setLoginData({
           username: '',
           password: ''
         });
       } else {
-        setMessage(`❌ Error: ${data.error || 'Login failed'}`);
+        setMessage(`❌ Error: ${data.detail || 'Login failed'}`);
       }
     } catch (error) {
       setMessage(`❌ Network Error: ${error.message}`);
     }
   };
 
+  // Handle logout
+  const handleLogout = () => {
+    setToken('');
+    setCurrentUser(null);
+    setIsAuthenticated(false);
+    setMessage('');
+    setLoginData({ username: '', password: '' });
+  };
+
+  // If authenticated, show appropriate dashboard
+  if (isAuthenticated && currentUser) {
+    if (currentUser.is_admin) {
+      return <AdminDashboard user={currentUser} token={token} onLogout={handleLogout} />;
+    } else {
+      return <UserDashboard user={currentUser} token={token} onLogout={handleLogout} />;
+    }
+  }
+
   return (
     <div className="App">
       <div className="container">
         <div className="header">
           <h1>🍬 Sweet Shop Management</h1>
-          <p>Authentication Testing Interface</p>
+          <p>Welcome! Please login or create an account</p>
         </div>
 
         <div className="tabs">
-          <button 
-            className={`tab ${activeTab === 'signup' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveTab('signup');
-              setMessage('');
-              setToken('');
-            }}
-          >
-            Sign Up
-          </button>
           <button 
             className={`tab ${activeTab === 'login' ? 'active' : ''}`}
             onClick={() => {
               setActiveTab('login');
               setMessage('');
-              setToken('');
             }}
           >
             Login
+          </button>
+          <button 
+            className={`tab ${activeTab === 'signup' ? 'active' : ''}`}
+            onClick={() => {
+              setActiveTab('signup');
+              setMessage('');
+            }}
+          >
+            Sign Up
           </button>
         </div>
 
@@ -141,23 +165,39 @@ function App() {
           </div>
         )}
 
-        {token && (
-          <div className="token-display">
-            <h3>Access Token:</h3>
-            <div className="token-text">{token}</div>
-            <button 
-              className="copy-btn"
-              onClick={() => {
-                navigator.clipboard.writeText(token);
-                alert('Token copied to clipboard!');
-              }}
-            >
-              📋 Copy Token
-            </button>
-          </div>
-        )}
+        {activeTab === 'login' ? (
+          <form onSubmit={handleLogin} className="form">
+            <div className="form-group">
+              <label htmlFor="login-username">Username:</label>
+              <input
+                type="text"
+                id="login-username"
+                name="username"
+                value={loginData.username}
+                onChange={handleLoginChange}
+                required
+                placeholder="Enter username"
+              />
+            </div>
 
-        {activeTab === 'signup' ? (
+            <div className="form-group">
+              <label htmlFor="login-password">Password:</label>
+              <input
+                type="password"
+                id="login-password"
+                name="password"
+                value={loginData.password}
+                onChange={handleLoginChange}
+                required
+                placeholder="Enter password"
+              />
+            </div>
+
+            <button type="submit" className="submit-btn">
+              Login
+            </button>
+          </form>
+        ) : (
           <form onSubmit={handleSignup} className="form">
             <div className="form-group">
               <label htmlFor="signup-username">Username:</label>
@@ -215,45 +255,13 @@ function App() {
               Create Account
             </button>
           </form>
-        ) : (
-          <form onSubmit={handleLogin} className="form">
-            <div className="form-group">
-              <label htmlFor="login-username">Username:</label>
-              <input
-                type="text"
-                id="login-username"
-                name="username"
-                value={loginData.username}
-                onChange={handleLoginChange}
-                required
-                placeholder="Enter username"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="login-password">Password:</label>
-              <input
-                type="password"
-                id="login-password"
-                name="password"
-                value={loginData.password}
-                onChange={handleLoginChange}
-                required
-                placeholder="Enter password"
-              />
-            </div>
-
-            <button type="submit" className="submit-btn">
-              Login
-            </button>
-          </form>
         )}
 
         <div className="info-box">
-          <h3>ℹ️ API Information</h3>
-          <p><strong>Base URL:</strong> {API_BASE_URL}</p>
-          <p><strong>Signup Endpoint:</strong> /api/auth/register</p>
-          <p><strong>Login Endpoint:</strong> /api/auth/login</p>
+          <h3>ℹ️ Quick Info</h3>
+          <p>👤 <strong>User Account:</strong> Browse and purchase sweets</p>
+          <p>👑 <strong>Admin Account:</strong> Manage inventory, view users, and analytics</p>
+          <p>🔒 All communications are secured with JWT tokens</p>
         </div>
       </div>
     </div>
