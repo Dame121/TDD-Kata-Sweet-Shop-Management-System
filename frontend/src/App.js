@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
 
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = 'http://localhost:8000';
 
 function App() {
   const [activeTab, setActiveTab] = useState('signup');
@@ -13,7 +13,7 @@ function App() {
     username: '',
     email: '',
     password: '',
-    role: 'customer'
+    is_admin: false
   });
 
   // Login form state
@@ -44,7 +44,7 @@ function App() {
     setMessage('');
     
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/users/signup`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ function App() {
           username: '',
           email: '',
           password: '',
-          role: 'customer'
+          is_admin: false
         });
       } else {
         setMessage(`❌ Error: ${data.error || 'Signup failed'}`);
@@ -78,7 +78,7 @@ function App() {
     setToken('');
     
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/users/login`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ function App() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage(`✅ Success: Login successful!`);
+        setMessage(`✅ Success: Welcome back, ${data.user.username}!`);
         setToken(data.access_token);
         // Clear form
         setLoginData({
@@ -199,16 +199,15 @@ function App() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="signup-role">Role:</label>
+              <label htmlFor="signup-is-admin">Account Type:</label>
               <select
-                id="signup-role"
-                name="role"
-                value={signupData.role}
-                onChange={handleSignupChange}
+                id="signup-is-admin"
+                name="is_admin"
+                value={signupData.is_admin}
+                onChange={(e) => setSignupData({...signupData, is_admin: e.target.value === 'true'})}
               >
-                <option value="customer">Customer</option>
-                <option value="store_owner">Store Owner</option>
-                <option value="supplier">Supplier</option>
+                <option value="false">Regular User</option>
+                <option value="true">Admin</option>
               </select>
             </div>
 
@@ -253,8 +252,8 @@ function App() {
         <div className="info-box">
           <h3>ℹ️ API Information</h3>
           <p><strong>Base URL:</strong> {API_BASE_URL}</p>
-          <p><strong>Signup Endpoint:</strong> /auth/users/signup</p>
-          <p><strong>Login Endpoint:</strong> /auth/users/login</p>
+          <p><strong>Signup Endpoint:</strong> /api/auth/register</p>
+          <p><strong>Login Endpoint:</strong> /api/auth/login</p>
         </div>
       </div>
     </div>
