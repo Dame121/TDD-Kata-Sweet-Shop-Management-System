@@ -7,7 +7,7 @@ from datetime import datetime
 from app.database import get_db, Sweet, Transaction, User
 from app.auth_utils import get_current_user, get_current_admin_user
 
-router = APIRouter(prefix="/sweets", tags=["Sweets"])
+router = APIRouter(prefix="/api/sweets", tags=["Sweets"])
 
 # Pydantic Models for Request/Response
 class SweetCreate(BaseModel):

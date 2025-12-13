@@ -13,7 +13,7 @@ from app.auth_utils import (
     ACCESS_TOKEN_EXPIRE_MINUTES
 )
 
-router = APIRouter(prefix="/admins", tags=["Admin Management"])
+router = APIRouter(prefix="/api/admins", tags=["Admin Management"])
 
 # Pydantic Models for Request/Response
 class AdminCreate(BaseModel):

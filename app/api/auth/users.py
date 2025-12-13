@@ -14,7 +14,7 @@ from app.auth_utils import (
     ACCESS_TOKEN_EXPIRE_MINUTES
 )
 
-router = APIRouter(prefix="/users", tags=["Authentication & Users"])
+router = APIRouter(prefix="/api/auth", tags=["Authentication & Users"])
 
 # Pydantic Models for Request/Response
 class UserCreate(BaseModel):
