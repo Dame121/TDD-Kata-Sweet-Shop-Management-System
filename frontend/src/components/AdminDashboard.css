@@ -440,6 +440,11 @@ td {
   color: #1e40af;
 }
 
+.action-btn.edit {
+  background: #fef3c7;
+  color: #b45309;
+}
+
 .action-btn.delete {
   background: #fee2e2;
   color: #991b1b;

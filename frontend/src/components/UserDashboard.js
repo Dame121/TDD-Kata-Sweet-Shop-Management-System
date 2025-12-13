@@ -41,6 +41,44 @@ function UserDashboard({ user, token, onLogout }) {
     }
   };
 
+  const searchSweets = async (query, category) => {
+    try {
+      setLoading(true);
+      let url = `${API_BASE_URL}/api/sweets/search?`;
+      if (query) url += `query=${encodeURIComponent(query)}&`;
+      if (category) url += `category=${encodeURIComponent(category)}`;
+      
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSweets(data);
+      } else {
+        setMessage('Search failed');
+      }
+    } catch (error) {
+      setMessage(`Error: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (searchTerm || selectedCategory) {
+        searchSweets(searchTerm, selectedCategory);
+      } else {
+        fetchSweets();
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchTerm, selectedCategory]);
+
   const handlePurchase = async (sweetId, sweetName) => {
     const quantity = prompt(`How many ${sweetName} would you like to purchase?`);
     
@@ -63,7 +101,12 @@ function UserDashboard({ user, token, onLogout }) {
 
       if (response.ok) {
         setMessage(`✅ Successfully purchased ${quantity} ${sweetName}!`);
-        fetchSweets(); // Refresh the list
+        // Refresh with current search/filter settings
+        if (searchTerm || selectedCategory) {
+          searchSweets(searchTerm, selectedCategory);
+        } else {
+          fetchSweets();
+        }
       } else {
         setMessage(`❌ ${data.detail || 'Purchase failed'}`);
       }
@@ -72,11 +115,8 @@ function UserDashboard({ user, token, onLogout }) {
     }
   };
 
-  const filteredSweets = sweets.filter(sweet => {
-    const matchesSearch = sweet.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = !selectedCategory || sweet.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  // Remove the manual filtering since we're using API search now
+  const filteredSweets = sweets;
 
   return (
     <div className="user-dashboard">

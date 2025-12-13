@@ -10,8 +10,18 @@ function AdminDashboard({ user, token, onLogout }) {
   const [message, setMessage] = useState('');
   const [activeSection, setActiveSection] = useState('overview');
   const [showAddSweet, setShowAddSweet] = useState(false);
+  const [showEditSweet, setShowEditSweet] = useState(false);
+  const [editingSweet, setEditingSweet] = useState(null);
   
   const [newSweet, setNewSweet] = useState({
+    name: '',
+    category: '',
+    price: '',
+    quantity_in_stock: '',
+    image: null
+  });
+  
+  const [editSweet, setEditSweet] = useState({
     name: '',
     category: '',
     price: '',
@@ -51,7 +61,7 @@ function AdminDashboard({ user, token, onLogout }) {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/users`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -106,6 +116,68 @@ function AdminDashboard({ user, token, onLogout }) {
     }
   };
 
+  const handleUpdateSweet = async (e) => {
+    e.preventDefault();
+    
+    try {
+      const updateData = {};
+      if (editSweet.name) updateData.name = editSweet.name;
+      if (editSweet.category) updateData.category = editSweet.category;
+      if (editSweet.price) updateData.price = parseFloat(editSweet.price);
+      if (editSweet.quantity_in_stock !== '') updateData.quantity_in_stock = parseInt(editSweet.quantity_in_stock);
+
+      const response = await fetch(`${API_BASE_URL}/api/sweets/${editingSweet.sweet_id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updateData)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage('✅ Sweet updated successfully!');
+        
+        // If there's a new image, upload it
+        if (editSweet.image) {
+          const formData = new FormData();
+          formData.append('image', editSweet.image);
+          
+          await fetch(`${API_BASE_URL}/api/sweets/${editingSweet.sweet_id}/image`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            },
+            body: formData
+          });
+        }
+        
+        setShowEditSweet(false);
+        setEditingSweet(null);
+        setEditSweet({ name: '', category: '', price: '', quantity_in_stock: '', image: null });
+        fetchSweets();
+      } else {
+        setMessage(`❌ ${data.detail || 'Failed to update sweet'}`);
+      }
+    } catch (error) {
+      setMessage(`❌ Error: ${error.message}`);
+    }
+  };
+
+  const openEditModal = (sweet) => {
+    setEditingSweet(sweet);
+    setEditSweet({
+      name: sweet.name,
+      category: sweet.category,
+      price: sweet.price.toString(),
+      quantity_in_stock: sweet.quantity_in_stock.toString(),
+      image: null
+    });
+    setShowEditSweet(true);
+  };
+
   const handleRestock = async (sweetId, sweetName) => {
     const quantity = prompt(`How many ${sweetName} would you like to add to stock?`);
     
@@ -153,6 +225,31 @@ function AdminDashboard({ user, token, onLogout }) {
       if (response.ok) {
         setMessage(`✅ Successfully deleted ${sweetName}`);
         fetchSweets();
+      } else {
+        const data = await response.json();
+        setMessage(`❌ ${data.detail || 'Delete failed'}`);
+      }
+    } catch (error) {
+      setMessage(`❌ Error: ${error.message}`);
+    }
+  };
+
+  const handleDeleteUser = async (userId, username) => {
+    if (!window.confirm(`Are you sure you want to delete user ${username}?`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        setMessage(`✅ Successfully deleted user ${username}`);
+        fetchUsers();
       } else {
         const data = await response.json();
         setMessage(`❌ ${data.detail || 'Delete failed'}`);
@@ -343,6 +440,59 @@ function AdminDashboard({ user, token, onLogout }) {
                     </div>
                   )}
 
+                  {showEditSweet && (
+                    <div className="modal-overlay" onClick={() => setShowEditSweet(false)}>
+                      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <h3>Edit Sweet</h3>
+                        <form onSubmit={handleUpdateSweet}>
+                          <input
+                            type="text"
+                            placeholder="Sweet Name"
+                            value={editSweet.name}
+                            onChange={(e) => setEditSweet({...editSweet, name: e.target.value})}
+                          />
+                          <input
+                            type="text"
+                            placeholder="Category"
+                            value={editSweet.category}
+                            onChange={(e) => setEditSweet({...editSweet, category: e.target.value})}
+                          />
+                          <input
+                            type="number"
+                            step="0.01"
+                            placeholder="Price"
+                            value={editSweet.price}
+                            onChange={(e) => setEditSweet({...editSweet, price: e.target.value})}
+                          />
+                          <input
+                            type="number"
+                            placeholder="Stock Quantity"
+                            value={editSweet.quantity_in_stock}
+                            onChange={(e) => setEditSweet({...editSweet, quantity_in_stock: e.target.value})}
+                          />
+                          <div className="file-input-container">
+                            <label htmlFor="edit-sweet-image" className="file-input-label">
+                              📷 {editSweet.image ? editSweet.image.name : 'Update Image (Optional)'}
+                            </label>
+                            <input
+                              type="file"
+                              id="edit-sweet-image"
+                              accept="image/*"
+                              onChange={(e) => setEditSweet({...editSweet, image: e.target.files[0]})}
+                              className="file-input"
+                            />
+                          </div>
+                          <div className="modal-actions">
+                            <button type="submit" className="submit-btn">Update Sweet</button>
+                            <button type="button" onClick={() => setShowEditSweet(false)} className="cancel-btn">
+                              Cancel
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="inventory-table">
                     <table>
                       <thead>
@@ -381,6 +531,12 @@ function AdminDashboard({ user, token, onLogout }) {
                             </td>
                             <td>
                               <button
+                                onClick={() => openEditModal(sweet)}
+                                className="action-btn edit"
+                              >
+                                ✏️ Edit
+                              </button>
+                              <button
                                 onClick={() => handleRestock(sweet.sweet_id, sweet.name)}
                                 className="action-btn restock"
                               >
@@ -414,21 +570,32 @@ function AdminDashboard({ user, token, onLogout }) {
                           <th>Email</th>
                           <th>Role</th>
                           <th>Status</th>
+                          <th>Actions</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {users.map(user => (
-                          <tr key={user.user_id}>
-                            <td>{user.user_id}</td>
-                            <td>{user.username}</td>
-                            <td>{user.email}</td>
+                        {users.map(usr => (
+                          <tr key={usr.user_id}>
+                            <td>{usr.user_id}</td>
+                            <td>{usr.username}</td>
+                            <td>{usr.email}</td>
                             <td>
-                              <span className={`role-badge ${user.is_admin ? 'admin' : 'user'}`}>
-                                {user.is_admin ? '👑 Admin' : '👤 User'}
+                              <span className={`role-badge ${usr.is_admin ? 'admin' : 'user'}`}>
+                                {usr.is_admin ? '👑 Admin' : '👤 User'}
                               </span>
                             </td>
                             <td>
                               <span className="status-badge active">Active</span>
+                            </td>
+                            <td>
+                              {usr.user_id !== user.user_id && (
+                                <button
+                                  onClick={() => handleDeleteUser(usr.user_id, usr.username)}
+                                  className="action-btn delete"
+                                >
+                                  🗑️ Delete
+                                </button>
+                              )}
                             </td>
                           </tr>
                         ))}
