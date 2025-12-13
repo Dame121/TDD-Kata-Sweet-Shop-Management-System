@@ -23,6 +23,16 @@ class Sweet(Base):
     price = Column(Float, nullable=False)
     quantity_in_stock = Column(Integer, nullable=False, default=0)
 
+class Admin(Base):
+    __tablename__ = "admins"
+    admin_id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True, nullable=False)
+    email = Column(String, unique=True, index=True, nullable=False)
+    password = Column(String, nullable=False)
+    full_name = Column(String, nullable=True)
+    role = Column(String, default="admin")
+    is_active = Column(Boolean, default=True)
+
 
 Base.metadata.create_all(bind=engine)
 
