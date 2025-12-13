@@ -1,419 +1,672 @@
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.12-blue?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/FastAPI-0.104-green?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI">
+  <img src="https://img.shields.io/badge/React-18.2-blue?style=for-the-badge&logo=react&logoColor=white" alt="React">
+  <img src="https://img.shields.io/badge/Tests-76%20Passing-brightgreen?style=for-the-badge" alt="Tests">
+  <img src="https://img.shields.io/badge/Coverage-70%25-yellow?style=for-the-badge" alt="Coverage">
+</p>
+
 # 🍬 Sweet Shop Management System
 
-A full-stack web application for managing a sweet shop inventory with role-based access control, featuring user authentication, inventory management, and image uploads.
+> A modern, full-stack web application for managing a sweet shop with role-based access control, real-time inventory tracking, and cloud-based image management.
 
-## 📖 Overview
+---
 
-This project is a comprehensive sweet shop management system built with FastAPI (backend) and React (frontend). It provides separate interfaces for customers and administrators, with secure JWT authentication and real-time inventory tracking.
+## 📋 Table of Contents
 
-## ✨ Features
+- [Project Overview](#-project-overview)
+- [Key Features](#-key-features)
+- [Screenshots](#-screenshots)
+- [Technology Stack](#️-technology-stack)
+- [Getting Started](#-getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Backend Setup](#backend-setup)
+  - [Frontend Setup](#frontend-setup)
+- [Running Tests](#-running-tests)
+- [API Documentation](#-api-documentation)
+- [My AI Usage](#-my-ai-usage)
+- [Project Structure](#-project-structure)
+- [Author](#-author)
 
-### User Features
-- 🔐 User registration and login with JWT authentication
-- 🛍️ Browse available sweets with images
-- 🔍 Search and filter sweets by name and category
-- 🛒 Purchase sweets with automatic inventory updates
-- 📱 Responsive design for all devices
+---
 
-### Admin Features
-- 👑 Admin-only access to management features
-- ➕ Add new sweets with image uploads (ImageKit.io CDN)
-- ✏️ Edit sweet details and update images
-- 🗑️ Delete sweets from inventory
-- 📦 Restock inventory items
-- 👥 View and manage users
-- 📊 Dashboard with inventory statistics
+## 🎯 Project Overview
 
-## � Screenshots
+The **Sweet Shop Management System** is a comprehensive full-stack application designed to streamline sweet shop operations. Built using **Test-Driven Development (TDD)** principles, this project demonstrates modern web development practices with a focus on:
 
-### Authentication
+- **Secure Authentication**: JWT-based authentication with role-based access control
+- **Real-time Inventory**: Automatic stock updates with purchase and restock operations
+- **Cloud Image Storage**: Integrated with ImageKit.io CDN for fast image delivery
+- **Modern UI/UX**: Premium design with responsive layouts and intuitive interactions
+- **Comprehensive Testing**: 76 tests achieving 70% code coverage
 
-#### Login Page
-![Login Page](screenshots/1.png)
+### Problem Statement
 
-#### Sign Up Page
-![Sign Up Page](screenshots/2.png)
+Traditional sweet shops often struggle with:
+- Manual inventory tracking leading to stock discrepancies
+- No digital presence for customer browsing
+- Difficulty in managing multiple users and roles
+- Paper-based record keeping
 
-### User Dashboard
+### Solution
 
-#### Browse Sweets
-![User Dashboard - Browse](screenshots/3.png)
+This application provides:
+- **Digital storefront** for customers to browse and purchase
+- **Admin dashboard** for complete inventory control
+- **Automated stock management** with real-time updates
+- **Secure multi-user system** with role-based permissions
 
-#### Purchase Sweets
-![User Dashboard - Purchase](screenshots/4.png)
+---
 
-### Admin Dashboard
+## ✨ Key Features
 
-#### Dashboard Overview
-![Admin Dashboard - Overview](screenshots/5.png)
+### 👤 For Customers (User Dashboard)
+| Feature | Description |
+|---------|-------------|
+| 🔐 Secure Login | JWT authentication with form validation |
+| 🛍️ Browse Sweets | View all available sweets with images and prices |
+| 🔍 Smart Search | Filter by name, category, and price range |
+| 🛒 Easy Purchase | Custom modal with quantity selection and total calculation |
+| 📱 Responsive Design | Works seamlessly on desktop, tablet, and mobile |
 
-#### Inventory Management
-![Admin Dashboard - Inventory](screenshots/6.png)
+### 👑 For Administrators (Admin Dashboard)
+| Feature | Description |
+|---------|-------------|
+| 📊 Dashboard Overview | Statistics for total stock, products, and inventory value |
+| ➕ Add Sweets | Create new items with image upload to cloud CDN |
+| ✏️ Edit Products | Update details with real-time image preview |
+| 📦 Restock Items | Quick restock functionality for low-stock alerts |
+| 👥 User Management | View and manage all registered users |
+| 🗑️ Delete Items | Remove products with automatic image cleanup |
 
-#### Add/Edit Sweets
-![Admin Dashboard - Add Sweets](screenshots/7.png)
+---
 
-## �🛠️ Technology Stack
+## 📸 Screenshots
+
+### 🔐 Authentication
+
+<table>
+  <tr>
+    <td width="50%">
+      <h4 align="center">Login Page</h4>
+      <img src="screenshots/1.png" alt="Login Page" width="100%">
+      <p align="center"><em>Secure login with form validation and error handling</em></p>
+    </td>
+    <td width="50%">
+      <h4 align="center">Sign Up Page</h4>
+      <img src="screenshots/2.png" alt="Sign Up Page" width="100%">
+      <p align="center"><em>User registration with email, password, and username validation</em></p>
+    </td>
+  </tr>
+</table>
+
+### 🛍️ User Dashboard
+
+<table>
+  <tr>
+    <td width="50%">
+      <h4 align="center">Browse Sweets</h4>
+      <img src="screenshots/3.png" alt="User Dashboard - Browse" width="100%">
+      <p align="center"><em>Browse available sweets with search and filter options</em></p>
+    </td>
+    <td width="50%">
+      <h4 align="center">Purchase Button Click</h4>
+      <img src="screenshots/3.5.png" alt="User Dashboard - Purchase Click" width="100%">
+      <p align="center"><em>User clicking on the purchase button</em></p>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+      <h4 align="center">Purchase Modal</h4>
+      <img src="screenshots/4.png" alt="User Dashboard - Purchase Modal" width="50%">
+      <p align="center"><em>Custom purchase modal with quantity selector and total calculation</em></p>
+    </td>
+  </tr>
+</table>
+
+### 👑 Admin Dashboard
+
+<table>
+  <tr>
+    <td width="33%">
+      <h4 align="center">Dashboard Overview</h4>
+      <img src="screenshots/5.png" alt="Admin Dashboard - Overview" width="100%">
+      <p align="center"><em>Statistics and low-stock alerts</em></p>
+    </td>
+    <td width="33%">
+      <h4 align="center">Inventory Management</h4>
+      <img src="screenshots/6.png" alt="Admin Dashboard - Inventory" width="100%">
+      <p align="center"><em>Full CRUD operations on sweets</em></p>
+    </td>
+    <td width="33%">
+      <h4 align="center">Edit Item Click</h4>
+      <img src="screenshots/6.5.png" alt="Admin Dashboard - Edit Click" width="100%">
+      <p align="center"><em>Admin clicking edit on inventory item</em></p>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="3" align="center">
+      <h4 align="center">Add/Edit Modal</h4>
+      <img src="screenshots/7.png" alt="Admin Dashboard - Add/Edit Modal" width="50%">
+      <p align="center"><em>Modal with image preview and upload</em></p>
+    </td>
+  </tr>
+</table>
+
+---
+
+## 🛠️ Technology Stack
 
 ### Backend
-- **Framework**: FastAPI (Python 3.12)
-- **ORM**: SQLAlchemy with SQLite database
-- **Authentication**: JWT tokens with python-jose
-- **Password Security**: Passlib with bcrypt
-- **Image Management**: ImageKit.io SDK for cloud storage
-- **API Documentation**: Auto-generated with Swagger/OpenAPI
+| Technology | Purpose |
+|------------|---------|
+| **FastAPI** | High-performance Python web framework |
+| **SQLAlchemy** | ORM for database operations |
+| **SQLite** | Lightweight database for development |
+| **JWT (python-jose)** | Secure token-based authentication |
+| **Passlib + bcrypt** | Password hashing and verification |
+| **ImageKit.io SDK** | Cloud image storage and CDN |
+| **Pydantic** | Data validation and serialization |
 
 ### Frontend
-- **Framework**: React 18.2.0
-- **Routing**: React Router for SPA navigation
-- **Styling**: Modern CSS with responsive design
-- **HTTP Client**: Fetch API for backend communication
+| Technology | Purpose |
+|------------|---------|
+| **React 18.2** | Component-based UI library |
+| **CSS3** | Modern styling with custom properties |
+| **Bootstrap Icons** | Professional icon library |
+| **Fetch API** | HTTP client for API communication |
 
-### Testing
-- **Framework**: Pytest
-- **Coverage**: 70% overall (76 passing tests)
-- **Test Types**: Unit, integration, and API endpoint tests
+### Testing & Quality
+| Technology | Purpose |
+|------------|---------|
+| **Pytest** | Testing framework |
+| **pytest-cov** | Coverage reporting |
+| **httpx** | Async HTTP testing |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+| Requirement | Version | Download |
+|-------------|---------|----------|
+| Python | 3.12+ | [python.org](https://www.python.org/downloads/) |
+| Node.js | 18+ | [nodejs.org](https://nodejs.org/) |
+| Git | Latest | [git-scm.com](https://git-scm.com/) |
+| ImageKit Account | - | [imagekit.io](https://imagekit.io/) (free tier available) |
+
+---
+
+### Backend Setup
+
+#### Step 1: Clone the Repository
+
+```bash
+git clone https://github.com/Dame121/TDD-Kata-Sweet-Shop-Management-System.git
+cd "Sweet Shop Managemen  System"
+```
+
+#### Step 2: Create Virtual Environment
+
+```bash
+# Create virtual environment
+python -m venv .venv
+
+# Activate (Windows)
+.venv\Scripts\activate
+
+# Activate (macOS/Linux)
+source .venv/bin/activate
+```
+
+#### Step 3: Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+#### Step 4: Configure Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+# Application Settings
+APP_NAME=Sweet Shop Management System
+APP_VERSION=1.0.0
+DEBUG=True
+
+# Security
+SECRET_KEY=your-super-secret-key-change-in-production
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+# Database
+DATABASE_URL=sqlite:///./sweet_shop.db
+
+# CORS
+CORS_ORIGINS=*
+
+# ImageKit.io Configuration (Get from https://imagekit.io/dashboard)
+IMAGEKIT_PRIVATE_KEY=your_private_key_here
+IMAGEKIT_PUBLIC_KEY=your_public_key_here
+IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/your_imagekit_id
+```
+
+> ⚠️ **Important**: Replace the placeholder values with your actual ImageKit.io credentials from the [ImageKit Dashboard](https://imagekit.io/dashboard).
+
+#### Step 5: Create Admin User
+
+```bash
+python scripts/create_first_admin.py
+```
+
+This creates the default admin account:
+- **Username**: `admin`
+- **Password**: `admin123`
+
+#### Step 6: Start Backend Server
+
+```bash
+python main.py
+```
+
+✅ Backend running at: **http://localhost:8000**
+
+📖 API Documentation: **http://localhost:8000/docs**
+
+---
+
+### Frontend Setup
+
+#### Step 1: Navigate to Frontend Directory
+
+```bash
+cd frontend
+```
+
+#### Step 2: Install Dependencies
+
+```bash
+npm install
+```
+
+#### Step 3: Start Development Server
+
+```bash
+npm start
+```
+
+✅ Frontend running at: **http://localhost:3000**
+
+---
+
+### Quick Start (Both Services)
+
+Open two terminal windows:
+
+**Terminal 1 (Backend):**
+```bash
+cd "Sweet Shop Managemen  System"
+.venv\Scripts\activate
+python main.py
+```
+
+**Terminal 2 (Frontend):**
+```bash
+cd "Sweet Shop Managemen  System/frontend"
+npm start
+```
+
+---
+
+## 🧪 Running Tests
+
+### Run All Tests
+
+```bash
+pytest -v
+```
+
+### Run with Coverage Report
+
+```bash
+pytest --cov=app --cov-report=html --cov-report=term
+```
+
+### View HTML Coverage Report
+
+```bash
+# Windows
+start htmlcov/index.html
+
+# macOS
+open htmlcov/index.html
+
+# Linux
+xdg-open htmlcov/index.html
+```
+
+### Test Results Summary
+
+| Metric | Value |
+|--------|-------|
+| **Total Tests** | 76 |
+| **Passing** | 76 (100%) |
+| **Overall Coverage** | 70% |
+
+#### Coverage by Module
+
+| Module | Coverage |
+|--------|----------|
+| `app.py` | 100% |
+| `database.py` | 91% |
+| `auth_utils.py` | 90% |
+| `sweets.py` | 74% |
+| `users.py` | 69% |
+| `admins.py` | 62% |
+
+---
+
+## 📚 API Documentation
+
+### Authentication Endpoints
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| `POST` | `/api/auth/register` | Register new user | ❌ |
+| `POST` | `/api/auth/login` | User login | ❌ |
+| `GET` | `/api/auth/me` | Get current user | ✅ |
+| `GET` | `/api/auth/` | Get all users | 👑 Admin |
+| `DELETE` | `/api/auth/{user_id}` | Delete user | 👑 Admin |
+
+### Sweets Management
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| `GET` | `/api/sweets/` | List all sweets | ✅ |
+| `GET` | `/api/sweets/{id}` | Get sweet by ID | ✅ |
+| `GET` | `/api/sweets/search` | Search sweets | ✅ |
+| `POST` | `/api/sweets/` | Create sweet | 👑 Admin |
+| `PUT` | `/api/sweets/{id}` | Update sweet | 👑 Admin |
+| `DELETE` | `/api/sweets/{id}` | Delete sweet | 👑 Admin |
+| `PUT` | `/api/sweets/{id}/image` | Update image | 👑 Admin |
+
+### Inventory Operations
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| `POST` | `/api/sweets/{id}/purchase` | Purchase sweet | ✅ |
+| `POST` | `/api/sweets/{id}/restock` | Restock sweet | 👑 Admin |
+
+> 📖 **Interactive API Documentation**: Visit `http://localhost:8000/docs` for Swagger UI
+
+---
+
+## 🤖 My AI Usage
+
+> This section documents my use of AI tools during development, as required by the TDD Kata assessment.
+
+### AI Tools Used
+
+| Tool | Purpose |
+|------|---------|
+| **GitHub Copilot** | Primary AI assistant for code generation, debugging, and refactoring |
+
+### Detailed Usage Breakdown
+
+#### 1. 📁 Project Structure & Boilerplate
+
+**How I Used AI:**
+- Generated initial FastAPI application structure
+- Created database models with SQLAlchemy
+- Set up CORS middleware and routing
+
+**My Contribution:**
+- Designed the overall architecture
+- Customized authentication flow for role-based access
+- Configured environment-specific settings
+
+**Impact:** Saved approximately 2 hours on repetitive setup tasks
+
+---
+
+#### 2. 🔐 Authentication System
+
+**How I Used AI:**
+- Generated JWT token creation and validation functions
+- Assisted with password hashing using bcrypt
+- Created dependency injection for protected routes
+
+**My Contribution:**
+- Designed the role-based access control logic
+- Implemented custom token claims
+- Added security best practices (token expiration, secure headers)
+
+**Impact:** Implemented secure auth quickly while maintaining best practices
+
+---
+
+#### 3. 🧪 Test Suite Development
+
+**How I Used AI:**
+- Generated test fixtures in `conftest.py`
+- Created test templates for CRUD operations
+- Debugged failing tests by analyzing error patterns
+
+**My Contribution:**
+- Designed test scenarios and edge cases
+- Ensured meaningful coverage (not just passing tests)
+- Wrote integration tests for authentication flows
+
+**Impact:** Achieved 76 comprehensive tests with 70% coverage
+
+---
+
+#### 4. ⚛️ React Frontend Components
+
+**How I Used AI:**
+- Generated component boilerplate and state management
+- Created API integration patterns with fetch
+- Assisted with form validation logic
+
+**My Contribution:**
+- Designed the entire UI/UX including the premium design system
+- Implemented custom purchase modal (replacing browser prompts)
+- Created responsive layouts and animations
+
+**Impact:** Rapid development while maintaining full creative control over UX
+
+---
+
+#### 5. 🖼️ ImageKit.io Integration
+
+**How I Used AI:**
+- Assisted with SDK integration for image uploads
+- Generated FormData handling for multipart requests
+- Debugged image update functionality
+
+**My Contribution:**
+- Selected ImageKit.io as the CDN provider
+- Handled error cases and retry logic
+- Implemented image preview in edit modals
+
+**Impact:** Seamless third-party integration with proper error handling
+
+---
+
+#### 6. 🎨 UI/UX Enhancements
+
+**How I Used AI:**
+- Generated CSS for toast notifications
+- Assisted with modal styling and animations
+- Created responsive design breakpoints
+
+**My Contribution:**
+- Designed the Indian sweet shop aesthetic
+- Chose the color palette (warm browns, golds)
+- Made all design decisions and refinements
+
+**Impact:** Created a premium, professional-looking interface
+
+---
+
+### AI vs Human Contribution
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                                                             │
+│   AI-Assisted (40%)          Human-Written (60%)            │
+│   ┌─────────────────┐        ┌─────────────────────────┐   │
+│   │ • Boilerplate   │        │ • Architecture Design   │   │
+│   │ • Templates     │        │ • Business Logic        │   │
+│   │ • Patterns      │        │ • Security Decisions    │   │
+│   │ • Debugging     │        │ • UI/UX Design          │   │
+│   │                 │        │ • Test Scenarios        │   │
+│   │                 │        │ • Integration Logic     │   │
+│   └─────────────────┘        └─────────────────────────┘   │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Transparency & Attribution
+
+Every commit where AI contributed includes proper co-authorship:
+
+```
+Co-authored-by: GitHub Copilot <copilot@github.com>
+```
+
+This allows reviewers to trace AI-assisted contributions in the git history.
+
+---
+
+### Reflection on AI Impact
+
+#### ✅ What Worked Well
+
+| Aspect | Benefit |
+|--------|---------|
+| **Speed** | 40% faster development on repetitive tasks |
+| **Quality** | AI suggestions often included error handling I might miss |
+| **Learning** | Exposed to new patterns and best practices |
+| **Focus** | More mental energy for architecture and design decisions |
+
+#### ⚠️ Challenges Encountered
+
+| Challenge | How I Handled It |
+|-----------|------------------|
+| Over-reliance risk | Consciously reviewed all generated code |
+| Outdated suggestions | Verified patterns against current documentation |
+| Context limitations | Provided detailed context in prompts |
+| Testing gaps | Added human-designed edge case tests |
+
+#### 💡 Key Learnings
+
+> "AI transforms development from 'writing every line' to 'designing, reviewing, and refining.'"
+
+The most valuable insight was that AI excels at:
+- ✅ Boilerplate and repetitive patterns
+- ✅ Syntax and API lookups
+- ✅ Debugging assistance
+
+But requires human judgment for:
+- ⚡ Architecture decisions
+- 🔒 Security considerations
+- 🎨 User experience design
+- 📊 Meaningful test coverage
+
+---
 
 ## 📁 Project Structure
 
 ```
 Sweet Shop Management System/
-├── app/                          # Backend application
-│   ├── api/                      # API routes
-│   │   ├── auth/                 # Authentication endpoints
-│   │   │   ├── users.py         # User management
-│   │   │   └── admins.py        # Admin management
-│   │   └── sweets/              # Sweet endpoints
-│   │       └── sweets.py        # CRUD operations
-│   ├── app.py                   # FastAPI application
-│   ├── database.py              # Database models
-│   ├── auth_utils.py            # JWT utilities
-│   └── imagekit_utils.py        # ImageKit integration
-├── frontend/                     # React application
-│   ├── public/                  # Static files
-│   └── src/
-│       ├── components/          # React components
-│       │   ├── AdminDashboard.js
-│       │   └── UserDashboard.js
-│       └── App.js              # Main app component
-├── tests/                       # Test suite
-│   ├── conftest.py             # Test fixtures
-│   ├── test_auth.py            # Auth tests
-│   ├── test_sweets.py          # Sweet CRUD tests
-│   ├── test_inventory.py       # Purchase/restock tests
-│   └── test_admin.py           # Admin tests
-├── scripts/                     # Utility scripts
-├── docs/                        # Documentation
-├── requirements.txt             # Python dependencies
-├── main.py                      # Application entry point
-└── README.md                    # This file
+│
+├── 📂 app/                        # Backend Application
+│   ├── 📂 api/
+│   │   ├── 📂 auth/              # Authentication endpoints
+│   │   │   ├── users.py          # User registration & login
+│   │   │   └── admins.py         # Admin management
+│   │   └── 📂 sweets/            # Sweet management endpoints
+│   │       └── sweets.py         # CRUD operations
+│   ├── app.py                    # FastAPI application entry
+│   ├── database.py               # SQLAlchemy models
+│   ├── auth_utils.py             # JWT utilities
+│   └── imagekit_utils.py         # ImageKit integration
+│
+├── 📂 frontend/                   # React Application
+│   ├── 📂 public/                # Static files
+│   └── 📂 src/
+│       ├── 📂 components/        # React components
+│       │   ├── AdminDashboard.js # Admin interface
+│       │   ├── UserDashboard.js  # User interface
+│       │   └── *.css             # Component styles
+│       ├── App.js                # Main app with auth
+│       └── App.css               # Global styles
+│
+├── 📂 tests/                      # Test Suite
+│   ├── conftest.py               # Pytest fixtures
+│   ├── test_auth.py              # Authentication tests
+│   ├── test_sweets.py            # Sweet CRUD tests
+│   ├── test_inventory.py         # Purchase/restock tests
+│   └── test_admin.py             # Admin-specific tests
+│
+├── 📂 screenshots/                # Application screenshots
+├── 📂 scripts/                    # Utility scripts
+├── 📂 docs/                       # Additional documentation
+│
+├── main.py                        # Application entry point
+├── requirements.txt               # Python dependencies
+├── pytest.ini                     # Pytest configuration
+└── README.md                      # This file
 ```
-
-## 🚀 Setup Instructions
-
-### Prerequisites
-- Python 3.12 or higher
-- Node.js 18+ and npm
-- ImageKit.io account (for image upload features)
-- Git
-
-### Backend Setup
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Dame121/TDD-Kata-Sweet-Shop-Management-System.git
-   cd "Sweet Shop Managemen  System"
-   ```
-
-2. **Create and activate virtual environment**
-   ```bash
-   python -m venv .venv
-   .venv\Scripts\activate  # Windows
-   source .venv/bin/activate  # Linux/Mac
-   ```
-
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Configure environment variables**
-   
-   Create a `.env` file in the root directory:
-   ```env
-   SECRET_KEY=your-secret-key-change-this-in-production
-   ACCESS_TOKEN_EXPIRE_MINUTES=30
-   DATABASE_URL=sqlite:///./test.db
-   CORS_ORIGINS=*
-   
-   # ImageKit.io Configuration
-   IMAGEKIT_PRIVATE_KEY=your_private_key_here
-   IMAGEKIT_PUBLIC_KEY=your_public_key_here
-   IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/your_imagekit_id
-   
-   APP_NAME=Sweet Shop Management System
-   APP_VERSION=1.0.0
-   DEBUG=True
-   ```
-
-5. **Create first admin user**
-   ```bash
-   python scripts/create_first_admin.py
-   ```
-
-6. **Start the backend server**
-   ```bash
-   python main.py
-   ```
-   Backend will run at: http://localhost:8000
-
-### Frontend Setup
-
-1. **Navigate to frontend directory**
-   ```bash
-   cd frontend
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Start development server**
-   ```bash
-   npm start
-   ```
-   Frontend will run at: http://localhost:3000
-
-## 🧪 Running Tests
-
-### Run all tests with verbose output
-```bash
-pytest -v
-```
-
-### Run tests with coverage report
-```bash
-pytest --cov=app --cov-report=html --cov-report=term
-```
-
-### View HTML coverage report
-```bash
-# Report generated in htmlcov/index.html
-start htmlcov/index.html  # Windows
-open htmlcov/index.html   # Mac
-```
-
-### Test Results
-- **Total Tests**: 76
-- **Passing**: 76 (100%)
-- **Coverage**: 70%
-  - app.py: 100%
-  - auth_utils.py: 90%
-  - database.py: 91%
-  - sweets.py: 74%
-  - users.py: 69%
-  - admins.py: 62%
-
-## 🔐 API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - User login
-- `GET /api/auth/me` - Get current user
-- `GET /api/auth/` - Get all users (Admin)
-- `PUT /api/auth/{user_id}` - Update user (Admin)
-- `DELETE /api/auth/{user_id}` - Delete user (Admin)
-
-### Sweets Management
-- `GET /api/sweets/` - List all sweets
-- `GET /api/sweets/{id}` - Get sweet by ID
-- `GET /api/sweets/search` - Search sweets
-- `POST /api/sweets/` - Create sweet (Admin)
-- `PUT /api/sweets/{id}` - Update sweet (Admin)
-- `DELETE /api/sweets/{id}` - Delete sweet (Admin)
-- `PUT /api/sweets/{id}/image` - Update sweet image (Admin)
-
-### Inventory Operations
-- `POST /api/sweets/{id}/purchase` - Purchase sweet
-- `POST /api/sweets/{id}/restock` - Restock sweet (Admin)
-
-### Admin Management
-- `POST /api/admins/register` - Create admin (Admin only)
-- `POST /api/admins/login` - Admin login
-- `GET /api/admins/` - List all admins (Admin)
-- `GET /api/admins/{id}` - Get admin by ID (Admin)
-
-## 🤖 My AI Usage
-
-### AI Tools Used
-
-Throughout this project, I extensively used **GitHub Copilot** as my primary AI assistant. This section details how AI tools were integrated into my development workflow in compliance with the TDD Kata requirements.
-
-### How AI Assisted My Development
-
-#### 1. **Initial Project Setup & Boilerplate**
-- **Tool**: GitHub Copilot
-- **Usage**: Generated initial FastAPI application structure, including CORS middleware setup, database configuration, and basic route scaffolding
-- **Impact**: Saved ~2 hours on repetitive boilerplate code
-- **Human Involvement**: Reviewed all generated code, customized authentication flow, and adapted to project-specific requirements
-
-#### 2. **Database Models & ORM**
-- **Tool**: GitHub Copilot
-- **Usage**: Assisted in creating SQLAlchemy models (User, Sweet, Transaction) with proper relationships and constraints
-- **Impact**: Helped implement best practices for database constraints and relationships
-- **Human Involvement**: Designed the data model structure, added validation logic, and implemented custom methods
-
-#### 3. **JWT Authentication Implementation**
-- **Tool**: GitHub Copilot
-- **Usage**: Generated JWT token creation, validation, and password hashing utilities
-- **Impact**: Implemented secure authentication quickly with industry-standard practices
-- **Human Involvement**: Configured token expiration, customized claims, integrated with role-based access control
-
-#### 4. **Test Suite Development**
-- **Tool**: GitHub Copilot
-- **Usage**: Generated test fixtures in conftest.py, created test templates for CRUD operations
-- **Impact**: Accelerated test writing, achieving 76 comprehensive tests
-- **Human Involvement**: Wrote test logic for edge cases, designed test scenarios, ensured proper coverage of authentication flows
-
-#### 5. **React Component Structure**
-- **Tool**: GitHub Copilot
-- **Usage**: Generated initial component boilerplate, state management hooks, and API integration patterns
-- **Impact**: Rapid frontend development with consistent patterns
-- **Human Involvement**: Designed UI/UX, implemented business logic, added form validation and error handling
-
-#### 6. **ImageKit.io Integration**
-- **Tool**: GitHub Copilot
-- **Usage**: Assisted with ImageKit SDK integration, file upload handling, and FormData processing
-- **Impact**: Streamlined third-party service integration
-- **Human Involvement**: Debugged API issues, handled error cases, implemented retry logic
-
-#### 7. **API Endpoint Debugging**
-- **Tool**: GitHub Copilot (via chat)
-- **Usage**: Diagnosed FormData vs JSON issues in test suite, identified endpoint signature mismatches
-- **Impact**: Resolved all 46 failing tests to achieve 100% pass rate
-- **Human Involvement**: Analyzed test failures, made architectural decisions about data formats
-
-### Workflow Impact
-
-#### Positive Impacts:
-- **Velocity**: ~40% faster development on boilerplate and repetitive tasks
-- **Quality**: AI suggestions often included error handling and edge cases I might have missed
-- **Learning**: Exposed to best practices and design patterns I wasn't familiar with
-- **Focus**: Freed mental energy for architecture decisions and business logic
-
-#### Challenges Managed:
-- **Over-reliance**: Had to consciously review all AI-generated code, found several instances where suggestions needed modification
-- **Context Limitations**: AI sometimes suggested outdated patterns; required research to verify best practices
-- **Testing Gaps**: AI-generated tests needed human oversight to ensure meaningful coverage, not just passing tests
-
-### AI-Generated vs Human-Written Code
-
-**Estimated Breakdown:**
-- **40% AI-assisted**: Boilerplate, initial structures, repetitive patterns
-- **60% Human-written**: Business logic, architecture decisions, debugging, refinement
-
-**Key Human Contributions:**
-- Overall architecture and API design
-- Role-based access control logic
-- Database relationship design
-- Error handling strategy
-- Test scenario planning
-- Frontend UX decisions
-
-### Transparency Statement
-
-Every commit where AI contributed to code generation includes proper co-authorship attribution:
-```
-Co-authored-by: GitHub Copilot <noreply@github.com>
-```
-
-This transparency allows reviewers to understand which parts of the codebase benefited from AI assistance and enables discussion about AI usage patterns in the interview.
-
-### Reflection
-
-Using AI tools transformed my development process from "writing every line" to "designing, reviewing, and refining." The key learning was that AI is a powerful accelerator but requires human judgment for:
-- Architecture decisions
-- Security considerations  
-- Business logic validation
-- User experience design
-- Test meaningfulness
-
-I believe the future of software development involves this collaborative approach—developers as architects and reviewers, with AI handling routine implementation details.
-
-## 📊 Test Coverage Report
-
-```
-Name                         Stmts   Miss  Cover   Missing
-----------------------------------------------------------
-app/__init__.py                  0      0   100%
-app/api/__init__.py              0      0   100%
-app/api/auth/__init__.py         3      0   100%
-app/api/auth/admins.py         106     40    62%
-app/api/auth/users.py          107     33    69%
-app/api/sweets/__init__.py       2      0   100%
-app/api/sweets/sweets.py       193     50    74%
-app/app.py                      13      0   100%
-app/auth_utils.py               61      6    90%
-app/database.py                 46      4    91%
-app/imagekit_utils.py           54     44    19%
-----------------------------------------------------------
-TOTAL                          585    177    70%
-```
-
-## 🎯 Default Login Credentials
-
-### Admin Account
-- **Username**: admin
-- **Password**: admin123
-
-### Test User Account
-- **Username**: testuser
-- **Password**: password123
-
-*Note: Change these credentials in production*
-
-## 📝 Future Enhancements
-
-- [ ] Add order history and transaction logs for users
-- [ ] Implement real-time notifications for low stock
-- [ ] Add analytics dashboard for sales trends
-- [ ] Support multiple currencies
-- [ ] Add email notifications for purchases
-- [ ] Implement password reset functionality
-- [ ] Add product reviews and ratings
-- [ ] Deploy to production (Vercel + Railway/Render)
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes with AI co-authorship if applicable
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 👨‍💻 Author
-
-**Damewan Bareh**
-- GitHub: [@Dame121](https://github.com/Dame121)
-- Project: [TDD-Kata-Sweet-Shop-Management-System](https://github.com/Dame121/TDD-Kata-Sweet-Shop-Management-System)
-
-## 🙏 Acknowledgments
-
-- FastAPI documentation and community
-- React.js team for excellent frontend framework
-- ImageKit.io for reliable image CDN service
-- GitHub Copilot for AI-assisted development
-- TDD Kata challenge for project inspiration
 
 ---
 
-**Note**: This project was developed as part of a TDD Kata assessment with transparent AI tool usage as per the requirements.
+## 🔑 Default Credentials
+
+### Admin Account
+| Field | Value |
+|-------|-------|
+| Username | `admin` |
+| Password | `admin123` |
+
+### Test User Account
+| Field | Value |
+|-------|-------|
+| Username | `testuser` |
+| Password | `password123` |
+
+> ⚠️ **Security Note**: Change these credentials before deploying to production.
+
+---
+
+## 👨‍💻 Author
+
+<table>
+  <tr>
+    <td>
+      <strong>Damewan Bareh</strong><br>
+      <a href="https://github.com/Dame121">@Dame121</a>
+    </td>
+  </tr>
+</table>
+
+**Project Repository:** [TDD-Kata-Sweet-Shop-Management-System](https://github.com/Dame121/TDD-Kata-Sweet-Shop-Management-System)
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+<p align="center">
+  <strong>Built with ❤️ for the TDD Kata Assessment</strong><br>
+  <em>Demonstrating modern full-stack development with transparent AI usage</em>
+</p>
 
 
