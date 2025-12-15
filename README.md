@@ -26,7 +26,17 @@
 - [API Documentation](#-api-documentation)
 - [My AI Usage](#-my-ai-usage)
 - [Project Structure](#-project-structure)
+- [Live Demo](#-live-demo)
+- [Future Enhancements](#-future-enhancements)
 - [Author](#-author)
+
+---
+
+## 🌐 Live Demo
+
+**Frontend (Vercel):** [https://tdd-kata-sweet-shop-management-syst-alpha.vercel.app/](https://tdd-kata-sweet-shop-management-syst-alpha.vercel.app/)
+
+> ⚠️ **Note:** Due to time constraints, the backend is not fully deployed yet. The live demo shows the frontend UI, but the API functionality requires running the backend locally. See [Future Enhancements](#-future-enhancements) for planned improvements.
 
 ---
 
@@ -449,6 +459,10 @@ AI didn't write this project for me it was more like pair programming with a ver
 
 The way I see it: AI is great at the *how* (syntax, patterns, boilerplate), but the *what* and *why* still need a human brain.
 
+#### Trying to Deploy (Render + Vercel)
+
+Towards the end of the project, I wanted to deploy the application so others could see it live. I asked Copilot for a step-by-step guide on how to deploy a FastAPI backend to Render and a React frontend to Vercel. It walked me through creating the necessary config files (`Procfile`, `render.yaml`, `vercel.json`), setting up environment variables, and configuring the frontend to use dynamic API URLs. I managed to get the frontend deployed to Vercel successfully! However, due to time constraints, I wasn't able to fully set up and test the backend deployment on Render. It's on my list of things to complete soon.
+
 ---
 
 ## 📁 Project Structure
@@ -515,7 +529,22 @@ Sweet Shop Management System/
 
 ---
 
-## 👨‍💻 Author
+## � Future Enhancements
+
+Here are some improvements I plan to make when time permits:
+
+| Enhancement | Description |
+|-------------|-------------|
+| **Full Backend Deployment** | Complete the Render deployment with PostgreSQL database for persistent storage |
+| **Database Migration** | Migrate from SQLite to PostgreSQL for production-ready data persistence |
+| **CI/CD Pipeline** | Set up GitHub Actions for automated testing and deployment |
+| **User Profiles** | Add profile pictures and order history for users |
+| **Payment Integration** | Integrate a payment gateway for real transactions |
+| **Email Notifications** | Send order confirmations and low-stock alerts |
+
+---
+
+## �👨‍💻 Author
 
 <table>
   <tr>

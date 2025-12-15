@@ -1,0 +1,20 @@
+# Render Blueprint for Sweet Shop Backend
+services:
+  - type: web
+    name: sweet-shop-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "30"
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: IMAGEKIT_PRIVATE_KEY
+        sync: false
+      - key: IMAGEKIT_PUBLIC_KEY
+        sync: false
+      - key: IMAGEKIT_URL_ENDPOINT
+        sync: false
