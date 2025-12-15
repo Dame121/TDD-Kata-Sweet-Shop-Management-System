@@ -412,23 +412,23 @@ Throughout this project, I used **GitHub Copilot** and **Claude Sonnet** as my c
 
 #### Getting Started Was So Much Faster
 
-When I started this project, I knew I wanted to use FastAPI with SQLAlchemy, but setting up all the boilerplate code from scratch would've taken forever. I asked Copilot to help me scaffold the initial project structure—things like the database models, CORS configuration, and basic routing. For more complex decisions, I'd chat with Claude Sonnet to think through architecture choices and get explanations for why certain patterns work better than others. This let me jump straight into the interesting parts: figuring out how the authentication should work and designing the user experience.
+When I started this project, I knew I wanted to use FastAPI with SQLAlchemy, but setting up all the boilerplate code from scratch would've taken forever. I asked Copilot to help me scaffold the initial project structure things like the database models, CORS configuration, and basic routing. For more complex decisions, I'd chat with Claude Sonnet to think through architecture choices and get explanations for why certain patterns work better than others. This let me jump straight into the interesting parts: figuring out how the authentication should work and designing the user experience.
 
 #### The Authentication System
 
-Building JWT authentication from scratch is tricky, and honestly, it's easy to mess up security stuff. I used Copilot to generate the token creation and validation logic, and it helped me implement password hashing with bcrypt properly. But here's the thing—I still had to think through the role-based access control myself. The AI gave me the building blocks, but deciding *who* should access *what* was entirely my decision.
+Building JWT authentication from scratch is tricky, and honestly, it's easy to mess up security stuff. I used Copilot to generate the token creation and validation logic, and it helped me implement password hashing with bcrypt properly. But here's the thing I still had to think through the role based access control myself. The AI gave me the building blocks, but deciding *who* should access *what* was entirely my decision.
 
 #### Writing Tests (Yes, All 76 of Them)
 
-I'll be honest—writing tests can feel tedious sometimes. Copilot was great for generating the repetitive parts, like test fixtures and basic CRUD test templates. But when it came to edge cases (what happens if someone tries to purchase more items than in stock? what if an admin tries to delete themselves?), I had to design those scenarios myself. The AI helped me write tests faster, but I made sure they were actually *meaningful* tests.
+I'll be honest writing tests can feel tedious sometimes. Copilot was great for generating the repetitive parts, like test fixtures and basic CRUD test templates. But when it came to edge cases (what happens if someone tries to purchase more items than in stock? what if an admin tries to delete themselves?), I had to design those scenarios myself. The AI helped me write tests faster, but I made sure they were actually *meaningful* tests.
 
 #### Building the React Frontend
 
-For the frontend, Copilot helped with component boilerplate and the fetch API patterns for talking to my backend. The time-saver here was huge. But the look and feel? That was all me. I designed the warm, premium aesthetic you see—the color palette, the purchase modal (I really didn't want to use boring browser prompts!), and all the little UX touches that make it feel polished.
+For the frontend, Copilot helped with component boilerplate and the fetch API patterns for talking to my backend. The time saver here was huge. But the look and feel? That was all me. I designed the warm, premium aesthetic you see the color palette, the purchase modal (I really didn't want to use boring browser prompts!), and all the little UX touches that make it feel polished.
 
 #### Integrating ImageKit.io
 
-This was interesting—I'd never used ImageKit before. Copilot helped me figure out the SDK integration and how to handle FormData for image uploads. When things broke (and they did!), I'd paste the error and ask for debugging help. It's like having a rubber duck that actually talks back.
+This was interesting I'd never used ImageKit before. Copilot helped me figure out the SDK integration and how to handle FormData for image uploads. When things broke (and they did!), I'd paste the error and ask for debugging help. It's like having a rubber duck that actually talks back.
 
 ### What I Learned About Working With AI
 
@@ -439,13 +439,13 @@ This was interesting—I'd never used ImageKit before. Copilot helped me figure 
 - I could focus my brain power on the *hard* problems instead of syntax
 
 **The Tricky Parts:**
-- Sometimes I caught myself accepting suggestions without really reading them—had to consciously slow down
+- Sometimes I caught myself accepting suggestions without really reading them had to consciously slow down
 - A few times the AI suggested outdated patterns, so I always double-checked against the docs
-- For anything security-related, I made sure to verify best practices independently
+- For anything security related, I made sure to verify best practices independently
 
 ### My Honest Take
 
-AI didn't write this project for me—it was more like pair programming with a very fast, very patient partner. I still made all the architecture decisions, designed the user experience, and thought through the edge cases. But for the stuff that's tedious or easy to get wrong (like JWT boilerplate or test fixtures), having AI help meant I could build something more polished in less time.
+AI didn't write this project for me it was more like pair programming with a very fast, very patient partner. I still made all the architecture decisions, designed the user experience, and thought through the edge cases. But for the stuff that's tedious or easy to get wrong (like JWT boilerplate or test fixtures), having AI help meant I could build something more polished in less time.
 
 The way I see it: AI is great at the *how* (syntax, patterns, boilerplate), but the *what* and *why* still need a human brain.
 
