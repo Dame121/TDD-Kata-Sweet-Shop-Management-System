@@ -2,8 +2,8 @@
 Script to create the first admin user in the database.
 Run this once to bootstrap your system with an admin account.
 """
-from app.database import SessionLocal, User
-from app.auth_utils import get_password_hash
+from backend.database import SessionLocal, User
+from backend.auth_utils import get_password_hash
 
 def create_first_admin():
     db = SessionLocal()

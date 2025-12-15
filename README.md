@@ -342,7 +342,7 @@ pytest -v
 ### Run with Coverage Report
 
 ```bash
-pytest --cov=app --cov-report=html --cov-report=term
+pytest --cov=backend --cov-report=html --cov-report=term
 ```
 
 ### View HTML Coverage Report
@@ -470,7 +470,7 @@ Towards the end of the project, I wanted to deploy the application so others cou
 ```
 Sweet Shop Management System/
 │
-├── 📂 app/                        # Backend Application
+├── 📂 backend/                    # Backend Application
 │   ├── 📂 api/
 │   │   ├── 📂 auth/              # Authentication endpoints
 │   │   │   ├── users.py          # User registration & login

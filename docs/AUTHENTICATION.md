@@ -238,8 +238,8 @@ Since creating an admin requires admin authentication, you need to create the fi
 
 ```python
 # Create first_admin.py
-from app.database import SessionLocal, User
-from app.auth_utils import get_password_hash
+from backend.database import SessionLocal, User
+from backend.auth_utils import get_password_hash
 
 db = SessionLocal()
 

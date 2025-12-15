@@ -4,9 +4,9 @@ from sqlalchemy import or_, and_
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime
-from app.database import get_db, Sweet, Transaction, User
-from app.auth_utils import get_current_user, get_current_admin_user
-from app.imagekit_utils import upload_sweet_image, delete_sweet_image
+from backend.database import get_db, Sweet, Transaction, User
+from backend.auth_utils import get_current_user, get_current_admin_user
+from backend.imagekit_utils import upload_sweet_image, delete_sweet_image
 
 router = APIRouter(prefix="/api/sweets", tags=["Sweets"])
 

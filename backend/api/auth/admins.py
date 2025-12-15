@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 from datetime import timedelta
-from app.database import get_db, User
-from app.auth_utils import (
+from backend.database import get_db, User
+from backend.auth_utils import (
     get_password_hash, 
     authenticate_user, 
     create_access_token,

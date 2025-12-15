@@ -12,9 +12,9 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.database import Base, get_db
-from app.app import app
-from app.auth_utils import get_password_hash
+from backend.database import Base, get_db
+from backend.app import app
+from backend.auth_utils import get_password_hash
 
 # Use an in-memory SQLite database for tests
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test_sweets.db"
@@ -76,7 +76,7 @@ def test_admin(client, db):
     Create a test admin user using the test database.
     Returns admin data with credentials and auth token.
     """
-    from app.database import User
+    from backend.database import User
     
     admin_data = {
         "username": "adminuser",
