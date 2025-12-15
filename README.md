@@ -406,176 +406,48 @@ xdg-open htmlcov/index.html
 
 ## 🤖 My AI Usage
 
-> This section documents my use of AI tools during development, as required by the TDD Kata assessment.
+Throughout this project, I used **GitHub Copilot** and **Claude Sonnet** as my coding companions. Here's an honest look at how AI helped me build this application and what I learned along the way.
 
-### AI Tools Used
+### How I Actually Used AI
 
-| Tool | Purpose |
-|------|---------|
-| **GitHub Copilot** | Primary AI assistant for code generation, debugging, and refactoring |
+#### Getting Started Was So Much Faster
 
-### Detailed Usage Breakdown
+When I started this project, I knew I wanted to use FastAPI with SQLAlchemy, but setting up all the boilerplate code from scratch would've taken forever. I asked Copilot to help me scaffold the initial project structure—things like the database models, CORS configuration, and basic routing. For more complex decisions, I'd chat with Claude Sonnet to think through architecture choices and get explanations for why certain patterns work better than others. This let me jump straight into the interesting parts: figuring out how the authentication should work and designing the user experience.
 
-#### 1. 📁 Project Structure & Boilerplate
+#### The Authentication System
 
-**How I Used AI:**
-- Generated initial FastAPI application structure
-- Created database models with SQLAlchemy
-- Set up CORS middleware and routing
+Building JWT authentication from scratch is tricky, and honestly, it's easy to mess up security stuff. I used Copilot to generate the token creation and validation logic, and it helped me implement password hashing with bcrypt properly. But here's the thing—I still had to think through the role-based access control myself. The AI gave me the building blocks, but deciding *who* should access *what* was entirely my decision.
 
-**My Contribution:**
-- Designed the overall architecture
-- Customized authentication flow for role-based access
-- Configured environment-specific settings
+#### Writing Tests (Yes, All 76 of Them)
 
-**Impact:** Saved approximately 2 hours on repetitive setup tasks
+I'll be honest—writing tests can feel tedious sometimes. Copilot was great for generating the repetitive parts, like test fixtures and basic CRUD test templates. But when it came to edge cases (what happens if someone tries to purchase more items than in stock? what if an admin tries to delete themselves?), I had to design those scenarios myself. The AI helped me write tests faster, but I made sure they were actually *meaningful* tests.
 
----
+#### Building the React Frontend
 
-#### 2. 🔐 Authentication System
+For the frontend, Copilot helped with component boilerplate and the fetch API patterns for talking to my backend. The time-saver here was huge. But the look and feel? That was all me. I designed the warm, premium aesthetic you see—the color palette, the purchase modal (I really didn't want to use boring browser prompts!), and all the little UX touches that make it feel polished.
 
-**How I Used AI:**
-- Generated JWT token creation and validation functions
-- Assisted with password hashing using bcrypt
-- Created dependency injection for protected routes
+#### Integrating ImageKit.io
 
-**My Contribution:**
-- Designed the role-based access control logic
-- Implemented custom token claims
-- Added security best practices (token expiration, secure headers)
+This was interesting—I'd never used ImageKit before. Copilot helped me figure out the SDK integration and how to handle FormData for image uploads. When things broke (and they did!), I'd paste the error and ask for debugging help. It's like having a rubber duck that actually talks back.
 
-**Impact:** Implemented secure auth quickly while maintaining best practices
+### What I Learned About Working With AI
 
----
+**The Good Stuff:**
+- I built features way faster than I would have alone
+- AI suggestions often included error handling I might've forgotten
+- I learned new patterns just by seeing what Copilot suggested
+- I could focus my brain power on the *hard* problems instead of syntax
 
-#### 3. 🧪 Test Suite Development
+**The Tricky Parts:**
+- Sometimes I caught myself accepting suggestions without really reading them—had to consciously slow down
+- A few times the AI suggested outdated patterns, so I always double-checked against the docs
+- For anything security-related, I made sure to verify best practices independently
 
-**How I Used AI:**
-- Generated test fixtures in `conftest.py`
-- Created test templates for CRUD operations
-- Debugged failing tests by analyzing error patterns
+### My Honest Take
 
-**My Contribution:**
-- Designed test scenarios and edge cases
-- Ensured meaningful coverage (not just passing tests)
-- Wrote integration tests for authentication flows
+AI didn't write this project for me—it was more like pair programming with a very fast, very patient partner. I still made all the architecture decisions, designed the user experience, and thought through the edge cases. But for the stuff that's tedious or easy to get wrong (like JWT boilerplate or test fixtures), having AI help meant I could build something more polished in less time.
 
-**Impact:** Achieved 76 comprehensive tests with 70% coverage
-
----
-
-#### 4. ⚛️ React Frontend Components
-
-**How I Used AI:**
-- Generated component boilerplate and state management
-- Created API integration patterns with fetch
-- Assisted with form validation logic
-
-**My Contribution:**
-- Designed the entire UI/UX including the premium design system
-- Implemented custom purchase modal (replacing browser prompts)
-- Created responsive layouts and animations
-
-**Impact:** Rapid development while maintaining full creative control over UX
-
----
-
-#### 5. 🖼️ ImageKit.io Integration
-
-**How I Used AI:**
-- Assisted with SDK integration for image uploads
-- Generated FormData handling for multipart requests
-- Debugged image update functionality
-
-**My Contribution:**
-- Selected ImageKit.io as the CDN provider
-- Handled error cases and retry logic
-- Implemented image preview in edit modals
-
-**Impact:** Seamless third-party integration with proper error handling
-
----
-
-#### 6. 🎨 UI/UX Enhancements
-
-**How I Used AI:**
-- Generated CSS for toast notifications
-- Assisted with modal styling and animations
-- Created responsive design breakpoints
-
-**My Contribution:**
-- Designed the Indian sweet shop aesthetic
-- Chose the color palette (warm browns, golds)
-- Made all design decisions and refinements
-
-**Impact:** Created a premium, professional-looking interface
-
----
-
-### AI vs Human Contribution
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                                                             │
-│   AI-Assisted (40%)          Human-Written (60%)            │
-│   ┌─────────────────┐        ┌─────────────────────────┐   │
-│   │ • Boilerplate   │        │ • Architecture Design   │   │
-│   │ • Templates     │        │ • Business Logic        │   │
-│   │ • Patterns      │        │ • Security Decisions    │   │
-│   │ • Debugging     │        │ • UI/UX Design          │   │
-│   │                 │        │ • Test Scenarios        │   │
-│   │                 │        │ • Integration Logic     │   │
-│   └─────────────────┘        └─────────────────────────┘   │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### Transparency & Attribution
-
-Every commit where AI contributed includes proper co-authorship:
-
-```
-Co-authored-by: GitHub Copilot <copilot@github.com>
-```
-
-This allows reviewers to trace AI-assisted contributions in the git history.
-
----
-
-### Reflection on AI Impact
-
-#### ✅ What Worked Well
-
-| Aspect | Benefit |
-|--------|---------|
-| **Speed** | 40% faster development on repetitive tasks |
-| **Quality** | AI suggestions often included error handling I might miss |
-| **Learning** | Exposed to new patterns and best practices |
-| **Focus** | More mental energy for architecture and design decisions |
-
-#### ⚠️ Challenges Encountered
-
-| Challenge | How I Handled It |
-|-----------|------------------|
-| Over-reliance risk | Consciously reviewed all generated code |
-| Outdated suggestions | Verified patterns against current documentation |
-| Context limitations | Provided detailed context in prompts |
-| Testing gaps | Added human-designed edge case tests |
-
-#### 💡 Key Learnings
-
-> "AI transforms development from 'writing every line' to 'designing, reviewing, and refining.'"
-
-The most valuable insight was that AI excels at:
-- ✅ Boilerplate and repetitive patterns
-- ✅ Syntax and API lookups
-- ✅ Debugging assistance
-
-But requires human judgment for:
-- ⚡ Architecture decisions
-- 🔒 Security considerations
-- 🎨 User experience design
-- 📊 Meaningful test coverage
+The way I see it: AI is great at the *how* (syntax, patterns, boilerplate), but the *what* and *why* still need a human brain.
 
 ---
 
