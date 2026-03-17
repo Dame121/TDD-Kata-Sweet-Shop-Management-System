@@ -303,18 +303,25 @@ For convenience, run this in the **project root** directory:
 .\start.bat
 ```
 
-Or for PowerShell:
-
-```powershell
-.\start.ps1
-```
-
 This will automatically:
-- Activate the Python virtual environment
-- Start the FastAPI backend on port 8000
-- Start the React frontend on port 3000 (in a new window)
+- ✅ Activate the Python virtual environment in `backend/env/`
+- ✅ Start the FastAPI backend on port 8000 (in Terminal Window 1)
+- ✅ Wait 3 seconds for backend initialization
+- ✅ Start the React frontend on port 3000 (in Terminal Window 2)
+- ✅ Display status and useful links
 
-> **Note:** You'll see both services running simultaneously - perfect for development!
+> **Note:** Both services run in separate terminal windows for easy monitoring!
+
+**Expected Output:**
+```
+╔════════════════════════════════════════════════════════════════╗
+║   Sweet Shop Management System - Full Stack Startup            ║
+╚════════════════════════════════════════════════════════════════╝
+
+🚀 Backend started:  http://localhost:8000
+🚀 Frontend started: http://localhost:3000
+📖 API Docs:         http://localhost:8000/docs
+```
 
 ---
 
@@ -457,50 +464,71 @@ Towards the end of the project, I wanted to deploy the application so others cou
 ```
 Sweet Shop Management System/
 │
-├── 📂 backend/                    # Backend Application
-│   ├── 📂 api/
-│   │   ├── 📂 auth/              # Authentication endpoints
-│   │   │   ├── users.py          # User registration & login
-│   │   │   └── admins.py         # Admin management
-│   │   └── 📂 sweets/            # Sweet management endpoints
-│   │       └── sweets.py         # CRUD operations
-│   ├── app.py                    # FastAPI application entry
-│   ├── database.py               # SQLAlchemy models
-│   ├── auth_utils.py             # JWT utilities
-│   └── imagekit_utils.py         # ImageKit integration
-│
-├── 📂 frontend/                   # React Application (Tailwind CSS)
-│   ├── 📂 public/                # Static files
+├── 📂 backend/                    # Backend Application (Professional MVC Architecture)
 │   ├── 📂 src/
-│   │   ├── 📂 components/Pages/  # Dashboard components
-│   │   │   ├── AdminDashboard.js # Admin dashboard
-│   │   │   ├── UserDashboard.js  # User dashboard
-│   │   │   └── *.css             # Component styles
-│   │   ├── 📂 configs/           # API configuration
-│   │   │   └── apiConfig.js      # API endpoints
+│   │   ├── 📂 app/               # Core Application Layer
+│   │   │   ├── main.py           # FastAPI app initialization & routes
+│   │   │   ├── database.py       # SQLAlchemy models & session management
+│   │   │   ├── settings.py       # Configuration & environment settings
+│   │   │   ├── auth.py           # JWT utilities & authentication
+│   │   │   └── utility.py        # Helper functions (ImageKit integration)
+│   │   └── 📂 modules/
+│   │       └── 📂 V1/            # API Version 1 Modules (Domain-Driven Design)
+│   │           ├── 📂 AuthManager/    # Authentication Module
+│   │           │   ├── dao.py         # Data Access Object
+│   │           │   ├── services.py    # Business Logic
+│   │           │   ├── controller.py  # Request Handlers
+│   │           │   ├── routers.py     # API Routes (/api/auth/*)
+│   │           │   └── schemas.py     # Pydantic Models
+│   │           └── 📂 SweetsManager/  # Sweets Management Module
+│   │               ├── dao.py         # Data Access Object
+│   │               ├── services.py    # Business Logic
+│   │               ├── controller.py  # Request Handlers
+│   │               ├── routers.py     # API Routes (/api/sweets/*)
+│   │               └── schemas.py     # Pydantic Models
+│   ├── 📂 test/                  # Test Suite
+│   │   ├── conftest.py           # Pytest fixtures
+│   │   ├── test_auth.py          # Auth endpoint tests
+│   │   ├── test_sweets.py        # Sweets CRUD tests
+│   │   └── test_inventory.py     # Inventory operation tests
+│   ├── 📂 env/                   # Python Virtual Environment
+│   ├── 📂 scripts/               # Utility Scripts
+│   │   └── create_first_admin.py # Admin user creation
+│   ├── main.py                   # Application Entry Point
+│   ├── requirements.txt          # Python dependencies
+│   ├── pytest.ini                # Pytest configuration
+│   ├── runtime.txt               # Python version specification
+│   └── render.yaml               # Render.com deployment config
+│
+├── 📂 frontend/                   # React Application (Tailwind CSS 3.x)
+│   ├── 📂 public/                # Static HTML & assets
+│   ├── 📂 src/
+│   │   ├── 📂 components/        # Reusable React components
+│   │   │   └── 📂 Pages/        # Page-level components
+│   │   │       ├── AdminDashboard.js   # Admin dashboard
+│   │   │       ├── UserDashboard.js    # User dashboard
+│   │   │       └── *.css             # Component styles
+│   │   ├── 📂 configs/           # Configuration files
+│   │   │   └── apiConfig.js      # API endpoints mapping
 │   │   ├── 📂 auth/              # Authentication utilities
-│   │   ├── App.js                # Main app with Tailwind styling
-│   │   ├── index.css             # Global + Tailwind directives
-│   │   └── index.js              # React entry point
-│   ├── tailwind.config.js        # Tailwind CSS configuration
-│   ├── postcss.config.js         # PostCSS plugin config
-│   ├── package.json              # Node dependencies
-│   └── vercel.json               # Vercel deployment config
+│   │   ├── 📂 utility/           # Helper utilities
+│   │   ├── 📂 context/           # React Context for state
+│   │   ├── 📂 hooks/             # Custom React hooks
+│   │   ├── App.js                # Main App (routes & Tailwind)
+│   │   ├── index.css             # Global styles + Tailwind
+│   │   └── index.js              # React entry point\n│   ├── tailwind.config.js        # Tailwind CSS configuration
+│   ├── postcss.config.js         # PostCSS plugins config
+│   ├── jsconfig.json             # JS path aliases
+│   ├── package.json              # Node.js dependencies
+│   ├── vercel.json               # Vercel deployment config
+│   └── node_modules/             # Dependencies (git ignored)
 │
-├── 📂 tests/                      # Test Suite
-│   ├── conftest.py               # Pytest fixtures
-│   ├── test_auth.py              # Authentication tests
-│   ├── test_sweets.py            # Sweet CRUD tests
-│   ├── test_inventory.py         # Purchase/restock tests
-│   └── test_admin.py             # Admin-specific tests
-│
-├── 📂 screenshots/                # Application screenshots
-├── 📂 scripts/                    # Utility scripts
-├── 📂 docs/                       # Additional documentation
-│
-├── main.py                        # Application entry point
-├── requirements.txt               # Python dependencies
-├── pytest.ini                     # Pytest configuration
+├── 📂 screenshots/                # Project screenshots/demos
+├── .env.example                   # Environment variables template
+├── .env                           # Environment variables (git ignored)
+├── .gitignore                     # Git ignore rules
+├── start.bat                      # Quick start script (Windows)
+├── RUN_APPLICATION.md             # Running instructions
 └── README.md                      # This file
 ```
 
