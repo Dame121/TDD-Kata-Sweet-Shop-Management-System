@@ -561,7 +561,7 @@ This project is licensed under the MIT License.
 ---
 
 <p align="center">
-  <strong>Built with ❤️ for the TDD Kata Assessment</strong><br>
+  <strong>Built with ❤️ </strong><br>
   <em>Demonstrating modern full-stack development with transparent AI usage</em>
 </p>
 
