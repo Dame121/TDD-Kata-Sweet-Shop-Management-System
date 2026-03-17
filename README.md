@@ -182,11 +182,8 @@ This application provides:
 | Technology | Purpose |
 |------------|---------|
 | **React 18.2** | Component-based UI library |
-| **CSS3** | Modern styling with custom properties |
-| **Bootstrap Icons** | Professional icon library |
-| **Fetch API** | HTTP client for API communication |
-
-### Testing & Quality
+| **Tailwind CSS 3.x** | Utility-first CSS framework for modern styling |
+| **PostCSS** | CSS transformation with Autoprefixer |
 | Technology | Purpose |
 |------------|---------|
 | **Pytest** | Testing framework |
@@ -219,17 +216,10 @@ git clone https://github.com/Dame121/TDD-Kata-Sweet-Shop-Management-System.git
 cd "Sweet Shop Managemen  System"
 ```
 
-#### Step 2: Create Virtual Environment
+#### Step 2: Navigate to Backend Directory
 
 ```bash
-# Create virtual environment
-python -m venv .venv
-
-# Activate (Windows)
-.venv\Scripts\activate
-
-# Activate (macOS/Linux)
-source .venv/bin/activate
+cd backend
 ```
 
 #### Step 3: Install Dependencies
@@ -238,13 +228,13 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-#### Step 4: Configure Environment Variables
+#### Step 4: Configure Environment Variables (in project root)
 
-Create a `.env` file in the root directory:
+Create a `.env` file in the **backend** directory:
 
 ```env
 # Application Settings
-APP_NAME=Sweet Shop Management System
+APP_TITLE=Sweet Shop Management System
 APP_VERSION=1.0.0
 DEBUG=True
 
@@ -272,6 +262,10 @@ IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/your_imagekit_id
 python scripts/create_first_admin.py
 ```
 
+> **Auto-created credentials if running first time:**
+> - Username: `admin`
+> - Password: `admin123`
+
 This creates the default admin account:
 - **Username**: `admin`
 - **Password**: `admin123`
@@ -284,27 +278,16 @@ python main.py
 
 ✅ Backend running at: **http://localhost:8000**
 
-📖 API Documentation: **http://localhost:8000/docs**
+📖 API Documentation: **http://localhost:8000/docs**  
+📖 ReDoc: **http://localhost:8000/api/redoc**
 
----
+#### Step 7: Start Frontend Server
 
-### Frontend Setup
-
-#### Step 1: Navigate to Frontend Directory
+Open a **new terminal window** and navigate to the frontend:
 
 ```bash
 cd frontend
-```
-
-#### Step 2: Install Dependencies
-
-```bash
-npm install
-```
-
-#### Step 3: Start Development Server
-
-```bash
+npm install  # Run only if you haven't installed dependencies
 npm start
 ```
 
@@ -312,22 +295,26 @@ npm start
 
 ---
 
-### Quick Start (Both Services)
+### Quick Start (Automated - Windows Only)
 
-Open two terminal windows:
+For convenience, run this in the **project root** directory:
 
-**Terminal 1 (Backend):**
 ```bash
-cd "Sweet Shop Managemen  System"
-.venv\Scripts\activate
-python main.py
+.\start.bat
 ```
 
-**Terminal 2 (Frontend):**
-```bash
-cd "Sweet Shop Managemen  System/frontend"
-npm start
+Or for PowerShell:
+
+```powershell
+.\start.ps1
 ```
+
+This will automatically:
+- Activate the Python virtual environment
+- Start the FastAPI backend on port 8000
+- Start the React frontend on port 3000 (in a new window)
+
+> **Note:** You'll see both services running simultaneously - perfect for development!
 
 ---
 
@@ -482,15 +469,23 @@ Sweet Shop Management System/
 │   ├── auth_utils.py             # JWT utilities
 │   └── imagekit_utils.py         # ImageKit integration
 │
-├── 📂 frontend/                   # React Application
+├── 📂 frontend/                   # React Application (Tailwind CSS)
 │   ├── 📂 public/                # Static files
-│   └── 📂 src/
-│       ├── 📂 components/        # React components
-│       │   ├── AdminDashboard.js # Admin interface
-│       │   ├── UserDashboard.js  # User interface
-│       │   └── *.css             # Component styles
-│       ├── App.js                # Main app with auth
-│       └── App.css               # Global styles
+│   ├── 📂 src/
+│   │   ├── 📂 components/Pages/  # Dashboard components
+│   │   │   ├── AdminDashboard.js # Admin dashboard
+│   │   │   ├── UserDashboard.js  # User dashboard
+│   │   │   └── *.css             # Component styles
+│   │   ├── 📂 configs/           # API configuration
+│   │   │   └── apiConfig.js      # API endpoints
+│   │   ├── 📂 auth/              # Authentication utilities
+│   │   ├── App.js                # Main app with Tailwind styling
+│   │   ├── index.css             # Global + Tailwind directives
+│   │   └── index.js              # React entry point
+│   ├── tailwind.config.js        # Tailwind CSS configuration
+│   ├── postcss.config.js         # PostCSS plugin config
+│   ├── package.json              # Node dependencies
+│   └── vercel.json               # Vercel deployment config
 │
 ├── 📂 tests/                      # Test Suite
 │   ├── conftest.py               # Pytest fixtures

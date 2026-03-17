@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["./*"],
+      "@components/*": ["./components/*"],
+      "@pages/*": ["./components/Pages/*"],
+      "@hooks/*": ["./hooks/*"],
+      "@context/*": ["./context/*"],
+      "@auth/*": ["./auth/*"],
+      "@configs/*": ["./configs/*"],
+      "@utility/*": ["./utility/*"],
+      "@assets/*": ["./assets/*"],
+      "@lib/*": ["./lib/*"]
+    },
+    "jsx": "react-jsx",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src"]
+}
