@@ -1,66 +1,61 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, FormEvent } from 'react';
 import './UserDashboard.css';
-import { API_BASE_URL, API_ENDPOINTS } from '../../configs';
+import { API_BASE_URL } from '../../configs';
+import { Sweet, DashboardProps, MessageType } from '../../types';
 
-function UserDashboard({ user, token, onLogout }) {
-  const [sweets, setSweets] = useState([]);
+const UserDashboard: React.FC<DashboardProps> = ({ user, token, onLogout }) => {
+  const [sweets, setSweets] = useState<Sweet[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState(''); // 'success', 'error', 'info'
+  const [messageType, setMessageType] = useState<MessageType>('');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<string[]>([]);
   
   // Purchase modal state
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
-  const [purchaseSweet, setPurchaseSweet] = useState(null);
+  const [purchaseSweet, setPurchaseSweet] = useState<Sweet | null>(null);
   const [purchaseQuantity, setPurchaseQuantity] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Helper function to show messages
-  const showMessage = (text, type = 'info') => {
+  const showMessage = (text: string, type: MessageType = 'info'): void => {
     setMessage(text);
     setMessageType(type);
-    // Auto-dismiss after 5 seconds
     setTimeout(() => setMessage(''), 5000);
   };
 
-  useEffect(() => {
-    fetchSweets();
-  }, []);
-
-  const fetchSweets = async () => {
+  const fetchSweets = useCallback(async (): Promise<void> => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE_URL}/api/sweets/`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/sweets/`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
 
       if (response.ok) {
-        const data = await response.json();
+        const data: Sweet[] = await response.json();
         setSweets(data);
-        
-        // Extract unique categories
         const uniqueCategories = [...new Set(data.map(sweet => sweet.category))];
         setCategories(uniqueCategories);
       } else {
         showMessage('Failed to fetch sweets', 'error');
       }
     } catch (error) {
-      showMessage(`Error: ${error.message}`, 'error');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      showMessage(`Error: ${errorMessage}`, 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
-  const searchSweets = async (query, category) => {
+  const searchSweets = useCallback(async (query: string, category: string): Promise<void> => {
     try {
       setLoading(true);
-      let url = `${API_BASE_URL}/api/sweets/search?`;
+      let url = `${API_BASE_URL}/api/v1/sweets/search?`;
       if (query) url += `query=${encodeURIComponent(query)}&`;
       if (category) url += `category=${encodeURIComponent(category)}`;
       
@@ -71,17 +66,22 @@ function UserDashboard({ user, token, onLogout }) {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        const data: Sweet[] = await response.json();
         setSweets(data);
       } else {
         showMessage('Search failed', 'error');
       }
     } catch (error) {
-      showMessage(`Error: ${error.message}`, 'error');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      showMessage(`Error: ${errorMessage}`, 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    fetchSweets();
+  }, [fetchSweets]);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -93,25 +93,22 @@ function UserDashboard({ user, token, onLogout }) {
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm, selectedCategory, minPrice, maxPrice]);
+  }, [searchTerm, selectedCategory, minPrice, maxPrice, searchSweets, fetchSweets]);
 
-  // Open purchase modal
-  const openPurchaseModal = (sweet) => {
+  const openPurchaseModal = (sweet: Sweet): void => {
     setPurchaseSweet(sweet);
     setPurchaseQuantity(1);
     setShowPurchaseModal(true);
   };
 
-  // Close purchase modal
-  const closePurchaseModal = () => {
+  const closePurchaseModal = (): void => {
     setShowPurchaseModal(false);
     setPurchaseSweet(null);
     setPurchaseQuantity(1);
     setIsProcessing(false);
   };
 
-  // Handle the actual purchase
-  const handlePurchase = async (e) => {
+  const handlePurchase = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     
     if (!purchaseSweet || purchaseQuantity <= 0) {
@@ -122,13 +119,13 @@ function UserDashboard({ user, token, onLogout }) {
     setIsProcessing(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/sweets/${purchaseSweet.sweet_id}/purchase`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/sweets/${purchaseSweet.sweet_id}/purchase`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ quantity: parseInt(purchaseQuantity) })
+        body: JSON.stringify({ quantity: purchaseQuantity })
       });
 
       const data = await response.json();
@@ -136,7 +133,6 @@ function UserDashboard({ user, token, onLogout }) {
       if (response.ok) {
         showMessage(`Successfully purchased ${purchaseQuantity} ${purchaseSweet.name}!`, 'success');
         closePurchaseModal();
-        // Refresh with current search/filter settings
         if (searchTerm || selectedCategory) {
           searchSweets(searchTerm, selectedCategory);
         } else {
@@ -147,12 +143,12 @@ function UserDashboard({ user, token, onLogout }) {
         setIsProcessing(false);
       }
     } catch (error) {
-      showMessage(`Error: ${error.message}`, 'error');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      showMessage(`Error: ${errorMessage}`, 'error');
       setIsProcessing(false);
     }
   };
 
-  // Filter sweets by price range on client side
   const filteredSweets = sweets.filter(sweet => {
     const min = parseFloat(minPrice) || 0;
     const max = parseFloat(maxPrice) || Infinity;
@@ -161,7 +157,6 @@ function UserDashboard({ user, token, onLogout }) {
 
   return (
     <div className="user-dashboard">
-      {/* Header */}
       <header className="dashboard-header">
         <div className="header-content">
           <div className="brand">
@@ -175,16 +170,13 @@ function UserDashboard({ user, token, onLogout }) {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="dashboard-main">
         <div className="dashboard-container">
-          {/* Welcome Section */}
           <section className="welcome-section">
             <h2>Browse Our Sweet Collection</h2>
             <p>Discover and purchase delicious sweets from our inventory</p>
           </section>
 
-          {/* Search and Filter */}
           <div className="search-filter-section">
             <div className="search-box">
               <input
@@ -228,7 +220,6 @@ function UserDashboard({ user, token, onLogout }) {
             </div>
           </div>
 
-          {/* Message Display */}
           {message && (
             <div className={`toast-message ${messageType}`}>
               <div className="toast-icon">
@@ -243,7 +234,6 @@ function UserDashboard({ user, token, onLogout }) {
             </div>
           )}
 
-          {/* Sweets Grid */}
           {loading ? (
             <div className="loading">Loading sweets...</div>
           ) : (
@@ -281,7 +271,11 @@ function UserDashboard({ user, token, onLogout }) {
                       disabled={sweet.quantity_in_stock === 0}
                       className="purchase-btn"
                     >
-                      {sweet.quantity_in_stock > 0 ? <><i className="bi bi-cart-plus"></i> Purchase</> : <><i className="bi bi-x-circle"></i> Out of Stock</>}
+                      {sweet.quantity_in_stock > 0 ? (
+                        <><i className="bi bi-cart-plus"></i> Purchase</>
+                      ) : (
+                        <><i className="bi bi-x-circle"></i> Out of Stock</>
+                      )}
                     </button>
                   </div>
                 ))
@@ -289,7 +283,6 @@ function UserDashboard({ user, token, onLogout }) {
             </div>
           )}
 
-          {/* Purchase Modal */}
           {showPurchaseModal && purchaseSweet && (
             <div className="modal-overlay" onClick={closePurchaseModal}>
               <div className="purchase-modal" onClick={(e) => e.stopPropagation()}>
@@ -348,22 +341,17 @@ function UserDashboard({ user, token, onLogout }) {
                         </button>
                       </div>
                     </div>
-                    
-                    <div className="purchase-total">
-                      <span>Total Amount:</span>
-                      <span className="total-price">₹{(purchaseSweet.price * purchaseQuantity).toFixed(2)}</span>
+
+                    <div className="total-price">
+                      <span>Total: ₹{(purchaseSweet.price * purchaseQuantity).toFixed(2)}</span>
                     </div>
-                    
+
                     <div className="modal-actions">
-                      <button type="button" onClick={closePurchaseModal} className="cancel-btn">
-                        <i className="bi bi-x-circle"></i> Cancel
+                      <button type="button" onClick={closePurchaseModal} className="btn-cancel">
+                        Cancel
                       </button>
-                      <button type="submit" className="confirm-purchase-btn" disabled={isProcessing}>
-                        {isProcessing ? (
-                          <><i className="bi bi-arrow-repeat spinning"></i> Processing...</>
-                        ) : (
-                          <><i className="bi bi-bag-check"></i> Confirm Purchase</>
-                        )}
+                      <button type="submit" disabled={isProcessing} className="btn-confirm">
+                        {isProcessing ? 'Processing...' : 'Confirm Purchase'}
                       </button>
                     </div>
                   </form>
@@ -373,54 +361,8 @@ function UserDashboard({ user, token, onLogout }) {
           )}
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="dashboard-footer">
-        <div className="footer-content">
-          <div className="footer-brand">
-            <h3><i className="bi bi-shop"></i> Sweet Shop</h3>
-            <p>Bringing sweetness to your life since 2024</p>
-          </div>
-          
-          <div className="footer-links">
-            <div className="footer-section">
-              <h4>Quick Links</h4>
-              <ul>
-                <li><i className="bi bi-house-door"></i> Home</li>
-                <li><i className="bi bi-grid"></i> Browse Sweets</li>
-                <li><i className="bi bi-heart"></i> Favorites</li>
-                <li><i className="bi bi-clock-history"></i> Order History</li>
-              </ul>
-            </div>
-            
-            <div className="footer-section">
-              <h4>Contact Us</h4>
-              <ul>
-                <li><i className="bi bi-geo-alt"></i> 123 Sweet Street, Mumbai</li>
-                <li><i className="bi bi-telephone"></i> +91 98765 43210</li>
-                <li><i className="bi bi-envelope"></i> hello@sweetshop.in</li>
-              </ul>
-            </div>
-            
-            <div className="footer-section">
-              <h4>Follow Us</h4>
-              <div className="social-links">
-                <a href="#" className="social-link"><i className="bi bi-facebook"></i></a>
-                <a href="#" className="social-link"><i className="bi bi-instagram"></i></a>
-                <a href="#" className="social-link"><i className="bi bi-twitter-x"></i></a>
-                <a href="#" className="social-link"><i className="bi bi-youtube"></i></a>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div className="footer-bottom">
-          <p>© 2024 Sweet Shop Management System. All rights reserved.</p>
-          <p className="footer-tagline">Made with <i className="bi bi-heart-fill"></i> in India</p>
-        </div>
-      </footer>
     </div>
   );
-}
+};
 
-export default UserDashboard;
+export { UserDashboard };

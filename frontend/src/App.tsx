@@ -1,15 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, FormEvent, ChangeEvent } from 'react';
 import { UserDashboard, AdminDashboard } from './components/Pages';
 import { API_BASE_URL } from './configs';
-import { getAuthToken, saveAuthToken, saveUser, clearAuth } from './auth';
-import { validateEmail, validatePassword } from './utility';
+import { getAuthToken, saveAuthToken, saveUser, clearAuth, User } from './auth';
+import { validateEmail, validatePasswordStrength, validateUsername } from './utility';
 
-function App() {
-  const [activeTab, setActiveTab] = useState('login');
+interface SignupData {
+  username: string;
+  email: string;
+  password: string;
+}
+
+interface LoginData {
+  username: string;
+  password: string;
+}
+
+interface ValidationErrors {
+  [key: string]: string;
+}
+
+interface LoginResponse {
+  access_token: string;
+  user: User;
+}
+
+type MessageType = 'success' | 'error' | 'info' | '';
+
+const App: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'login' | 'signup'>('login');
   const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState('');
+  const [messageType, setMessageType] = useState<MessageType>('');
   const [token, setToken] = useState('');
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   
@@ -19,7 +41,7 @@ function App() {
     
     if (savedToken && savedUser) {
       try {
-        const user = JSON.parse(savedUser);
+        const user: User = JSON.parse(savedUser);
         setToken(savedToken);
         setCurrentUser(user);
         setIsAuthenticated(true);
@@ -31,55 +53,45 @@ function App() {
     setIsLoading(false);
   }, []);
   
-  const showMessage = (text, type = 'info') => {
+  const showMessage = (text: string, type: MessageType = 'info'): void => {
     setMessage(text);
     setMessageType(type);
     setTimeout(() => setMessage(''), 5000);
   };
   
-  const [signupData, setSignupData] = useState({
+  const [signupData, setSignupData] = useState<SignupData>({
     username: '',
     email: '',
     password: ''
   });
 
-  const [validationErrors, setValidationErrors] = useState({});
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
 
-  const [loginData, setLoginData] = useState({
+  const [loginData, setLoginData] = useState<LoginData>({
     username: '',
     password: ''
   });
 
-  const handleSignupChange = (e) => {
+  const handleSignupChange = (e: ChangeEvent<HTMLInputElement>): void => {
     setSignupData({
       ...signupData,
       [e.target.name]: e.target.value
     });
   };
 
-  const handleLoginChange = (e) => {
+  const handleLoginChange = (e: ChangeEvent<HTMLInputElement>): void => {
     setLoginData({
       ...loginData,
       [e.target.name]: e.target.value
     });
   };
 
-  const validatePasswordStrength = (password) => {
-    const hasMinLength = password.length >= 6;
-    const hasNumber = /\d/.test(password);
-    return { isValid: hasMinLength && hasNumber, hasMinLength, hasNumber };
-  };
-
-  const validateUsername = (username) => {
-    return username.length >= 3 && /^[a-zA-Z0-9_]+$/.test(username);
-  };
-
-  const handleSignup = async (e) => {
+  const handleSignup = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setMessage('');
     setValidationErrors({});
 
-    const errors = {};
+    const errors: ValidationErrors = {};
     
     if (!validateUsername(signupData.username)) {
       errors.username = 'Username must be at least 3 characters (letters, numbers, underscore only)';
@@ -104,7 +116,7 @@ function App() {
     }
     
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -126,17 +138,18 @@ function App() {
         showMessage(data.detail || 'Signup failed', 'error');
       }
     } catch (error) {
-      showMessage(`Network Error: ${error.message}`, 'error');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      showMessage(`Network Error: ${errorMessage}`, 'error');
     }
   };
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setMessage('');
     setToken('');
     
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -147,22 +160,25 @@ function App() {
       const data = await response.json();
 
       if (response.ok) {
-        showMessage(`Welcome back, ${data.user.username}!`, 'success');
-        setToken(data.access_token);
-        setCurrentUser(data.user);
+        const loginData: LoginResponse = data;
+        showMessage(`Welcome back, ${loginData.user.username}!`, 'success');
+        setToken(loginData.access_token);
+        setCurrentUser(loginData.user);
         setIsAuthenticated(true);
-        saveAuthToken(data.access_token);
-        saveUser(data.user);
+        saveAuthToken(loginData.access_token);
+        saveUser(loginData.user);
         setLoginData({ username: '', password: '' });
       } else {
-        showMessage(data.detail || 'Login failed', 'error');
+        const errorData = data as any;
+        showMessage(errorData.detail || 'Login failed', 'error');
       }
     } catch (error) {
-      showMessage(`Network Error: ${error.message}`, 'error');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      showMessage(`Network Error: ${errorMessage}`, 'error');
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = (): void => {
     setToken('');
     setCurrentUser(null);
     setIsAuthenticated(false);
@@ -298,10 +314,12 @@ function App() {
                   value={signupData.username}
                   onChange={handleSignupChange}
                   required
-                  placeholder="At least 3 characters"
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent ${validationErrors.username ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                  placeholder="Choose a username"
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent ${
+                    validationErrors.username ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-amber-500'
+                  }`}
                 />
-                {validationErrors.username && <p className="text-red-600 text-sm"><i className="bi bi-exclamation-circle mr-1"></i>{validationErrors.username}</p>}
+                {validationErrors.username && <p className="text-red-600 text-sm">{validationErrors.username}</p>}
               </div>
 
               <div className="space-y-2">
@@ -316,9 +334,11 @@ function App() {
                   onChange={handleSignupChange}
                   required
                   placeholder="Enter your email"
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent ${validationErrors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent ${
+                    validationErrors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-amber-500'
+                  }`}
                 />
-                {validationErrors.email && <p className="text-red-600 text-sm"><i className="bi bi-exclamation-circle mr-1"></i>{validationErrors.email}</p>}
+                {validationErrors.email && <p className="text-red-600 text-sm">{validationErrors.email}</p>}
               </div>
 
               <div className="space-y-2">
@@ -332,48 +352,23 @@ function App() {
                   value={signupData.password}
                   onChange={handleSignupChange}
                   required
-                  placeholder="At least 6 characters with a number"
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent ${validationErrors.password ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                  placeholder="Create a strong password"
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent ${
+                    validationErrors.password ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-amber-500'
+                  }`}
                 />
-                {validationErrors.password && <p className="text-red-600 text-sm"><i className="bi bi-exclamation-circle mr-1"></i>{validationErrors.password}</p>}
+                {validationErrors.password && <p className="text-red-600 text-sm">{validationErrors.password}</p>}
               </div>
 
               <button type="submit" className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold py-3 rounded-lg transition-all shadow-md hover:shadow-lg">
-                <i className="bi bi-person-plus mr-2"></i>Create Account
+                <i className="bi bi-person-plus mr-2"></i>Sign Up
               </button>
             </form>
           )}
         </div>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="bg-white rounded-lg shadow p-6 border border-amber-100 hover:shadow-md transition-shadow">
-            <h3 className="text-lg font-bold text-amber-900 mb-4 flex items-center gap-2">
-              <i className="bi bi-star text-yellow-500"></i> Premium Quality Sweets
-            </h3>
-            <p className="text-gray-600">We source the finest ingredients to create delicious, high-quality sweets.</p>
-          </div>
-          <div className="bg-white rounded-lg shadow p-6 border border-amber-100 hover:shadow-md transition-shadow">
-            <h3 className="text-lg font-bold text-amber-900 mb-4 flex items-center gap-2">
-              <i className="bi bi-truck text-blue-600"></i> Fast & Fresh Delivery
-            </h3>
-            <p className="text-gray-600">Get your sweets delivered fresh and fast to your doorstep.</p>
-          </div>
-          <div className="bg-white rounded-lg shadow p-6 border border-amber-100 hover:shadow-md transition-shadow">
-            <h3 className="text-lg font-bold text-amber-900 mb-4 flex items-center gap-2">
-              <i className="bi bi-heart text-red-500"></i> Made with Love
-            </h3>
-            <p className="text-gray-600">Every sweet is prepared with care and attention to detail.</p>
-          </div>
-          <div className="bg-white rounded-lg shadow p-6 border border-amber-100 hover:shadow-md transition-shadow">
-            <h3 className="text-lg font-bold text-amber-900 mb-4 flex items-center gap-2">
-              <i className="bi bi-shield-check text-green-600"></i> 100% Secure Payments
-            </h3>
-            <p className="text-gray-600">Your transactions are safe and secure with us.</p>
-          </div>
-        </div>
       </div>
     </div>
   );
-}
+};
 
 export default App;

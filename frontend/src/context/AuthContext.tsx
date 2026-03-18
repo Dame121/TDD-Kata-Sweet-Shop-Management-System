@@ -1,11 +1,20 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getAuthToken, getUser, saveAuthToken, saveUser, clearAuth } from '../auth/jwtService';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { getAuthToken, getUser, saveAuthToken, saveUser, clearAuth, User } from '../auth/jwtService';
 
-const AuthContext = createContext();
+export interface AuthContextType {
+  user: User | null;
+  token: string | null;
+  loading: boolean;
+  login: (newToken: string, newUser: User) => void;
+  logout: () => void;
+  isAuthenticated: boolean;
+}
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Load auth data from localStorage on mount
@@ -20,7 +29,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = (newToken, newUser) => {
+  const login = (newToken: string, newUser: User) => {
     saveAuthToken(newToken);
     saveUser(newUser);
     setToken(newToken);
@@ -33,7 +42,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  const value = {
+  const value: AuthContextType = {
     user,
     token,
     loading,
@@ -52,7 +61,7 @@ export const AuthProvider = ({ children }) => {
 /**
  * Custom hook to use Auth context
  */
-export const useAuth = () => {
+export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error('useAuth must be used within AuthProvider');
