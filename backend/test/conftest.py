@@ -12,12 +12,16 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from src.app.database import Base, get_db, User
+from src.app.database import Base, get_db, init_models
 from src.app.auth import get_password_hash
 from src.app.main import app
 
+# Initialize models for testing
+User, Sweet, Transaction = init_models()
+
 # Use an in-memory SQLite database for tests
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test_sweets.db"
+
 engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

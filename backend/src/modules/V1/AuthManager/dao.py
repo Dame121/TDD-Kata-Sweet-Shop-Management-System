@@ -4,7 +4,7 @@ Handles all database queries related to users and authentication.
 """
 from sqlalchemy.orm import Session
 from typing import Optional, List
-from ....app.database import User
+from .models import User
 
 
 class AuthDAO:

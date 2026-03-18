@@ -5,15 +5,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
-from .database import engine, Base
+from .database import engine, Base, init_models
 from .settings import settings
-from ..modules.V1 import auth_router, sweets_router
+from .routers import api_router
 
 # Load environment variables
 load_dotenv()
 
-# Create tables
-Base.metadata.create_all(bind=engine)
+# Initialize models and create tables
+init_models()
 
 # Create FastAPI app
 app = FastAPI(
@@ -34,9 +34,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include API routers
-app.include_router(auth_router, prefix="/api")
-app.include_router(sweets_router, prefix="/api")
+# Include main API router (which includes all versioned routers)
+app.include_router(api_router)
 
 
 @app.get("/")

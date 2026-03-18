@@ -8,8 +8,9 @@ from fastapi import HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from ....app.database import get_db, User
+from ....app.database import get_db
 from ....app.auth import get_current_user, get_current_admin_user
+from .models import User
 from .schemas import (
     UserCreate, UserUpdate, UserResponse, TokenResponse, LoginRequest,
     AdminCreate, AdminUpdate, AdminResponse

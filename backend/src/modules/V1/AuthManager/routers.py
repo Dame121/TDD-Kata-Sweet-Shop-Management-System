@@ -7,8 +7,9 @@ from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from ....app.database import get_db, User
+from ....app.database import get_db
 from ....app.auth import get_current_user, get_current_admin_user
+from .models import User
 from .schemas import (
     UserCreate, UserUpdate, UserResponse, TokenResponse, LoginRequest,
     AdminCreate, AdminResponse
@@ -30,6 +31,7 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
 def login(login_data: LoginRequest, db: Session = Depends(get_db)):
     """Authenticate user and return JWT access token."""
     return AuthController.login(login_data, db)
+    
 
 
 @router.post("/token")

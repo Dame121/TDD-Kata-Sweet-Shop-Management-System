@@ -1,6 +1,6 @@
 """Main application module."""
 from .main import app
-from .database import Base, engine, SessionLocal, get_db, User, Sweet, Transaction
+from .database import Base, engine, SessionLocal, get_db, init_models
 from .settings import settings
 from .auth import (
     get_current_user,

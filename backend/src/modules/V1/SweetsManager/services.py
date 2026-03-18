@@ -5,7 +5,8 @@ Contains business logic for sweets management and inventory operations.
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-from ....app.database import Sweet, Transaction, User
+from ..AuthManager.models import User
+from .models import Sweet, Transaction
 from ....app.utility import upload_sweet_image, delete_sweet_image
 from .dao import SweetsDAO
 

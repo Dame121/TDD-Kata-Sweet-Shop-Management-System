@@ -10,7 +10,7 @@ from ....app.auth import (
     authenticate_user, create_access_token, get_password_hash
 )
 from ....app.settings import settings
-from ....app.database import User
+from .models import User
 from .dao import AuthDAO
 
 

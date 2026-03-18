@@ -6,8 +6,9 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, status, Query, UploadFile, File, Form
 from sqlalchemy.orm import Session
 
-from ....app.database import get_db, User
+from ....app.database import get_db
 from ....app.auth import get_current_user, get_current_admin_user
+from ..AuthManager.models import User
 from .schemas import (
     SweetCreate, SweetUpdate, SweetResponse, PurchaseRequest,
     RestockRequest, TransactionResponse

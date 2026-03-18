@@ -5,7 +5,7 @@ Handles all database queries related to sweets and transactions.
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from typing import Optional, List
-from ....app.database import Sweet, Transaction
+from .models import Sweet, Transaction
 
 
 class SweetsDAO:
